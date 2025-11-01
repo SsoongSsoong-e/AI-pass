@@ -1,0 +1,18 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="320"
+  height="414"
+>
+  <path
+    d="M160,0 L160,531"
+    fill="none"
+    stroke="gray"
+    stroke-dasharray="2.2"
+  />
+    <path
+    d="M100,275 Q160,335 220,275"
+    fill="none"
+    stroke="gray"
+    stroke-dasharray="2.2"
+  />
+</svg>
