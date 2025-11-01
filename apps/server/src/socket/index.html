@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Video Stream via WebSocket</title>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"
+    integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <video id="webcam" autoplay></video>
+  <button id="startStream">Start Stream</button>
+
+  <script>
+    const socket = io('http://localhost:5003/socket');
+    const video = document.getElementById('webcam');
+
+    socket.on('connect', function () {
+      console.log('Connected to WebSocket server');
+
+      document.getElementById('startStream').addEventListener('click', () => {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+              video.srcObject = stream;
+
+              // 10초마다 현재 비디오 프레임을 서버로 전송
+              setInterval(() => {
+                captureAndSendFrame();
+              }, 1700); // 10초마다 실행
+            })
+            .catch(err => {
+              console.error('Error accessing media devices:', err);
+            });
+        }
+      });
+    });
+
+    socket.on('stream', (data) => {
+      console.log('Data received:', data);
+    });
+
+    socket.on('disconnect', function () {
+      console.log('Disconnected from WebSocket server');
+    });
+
+    function captureAndSendFrame() {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL('image/jpeg');
+      socket.emit('stream', { image: imageData });
+    }
+  </script>
+</body>
+
+</html>

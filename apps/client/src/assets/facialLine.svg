@@ -1,0 +1,13 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="320"
+  height="414"
+  style="position: absolute; z-index: 10;"
+>
+  <path
+    d="M100,275 Q160,335 220,275"
+    fill="none"
+    stroke="white"
+    stroke-dasharray="2.2"
+  />
+</svg>
