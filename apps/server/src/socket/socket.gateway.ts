@@ -18,7 +18,7 @@ import axios from "axios";
 })
 export class SocketGateway {
   @WebSocketServer()
-  server: Server;
+  server: Server;                               
 
   async handleDisconnect(client: Socket) {
     const clientDirectory = path.join(
@@ -32,7 +32,7 @@ export class SocketGateway {
 
   async loadModelFromEC2(input: string): Promise<any> {
     try {
-      //const response = await axios.post("http://172.0.0.1:5001/process", {
+      //const response = await axios.post("http://3.37.203.103:5001/process", {
         const response = await axios.post("http://localhost:5001/process", {
         input: input, // Base64 인코딩된 이미지 데이터
       });

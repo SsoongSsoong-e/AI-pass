@@ -28,6 +28,13 @@ export class PhotoEditService {
       const formData = new FormData();
       formData.append("image", fileBuffer, filename); // 파일 이름을 명시적으로 추가
 
+      // 요청 전: 로그
+      console.log("===== Flask .crop API 호출 직전 =====");
+      console.log("요청 파일명:", filename);
+      console.log("Buffer size:", fileBuffer.length);
+      console.log("Form headers:", formData.getHeaders());
+      
+
       console.log("Sending FormData to Flask server...");
       console.log("Headers:", formData.getHeaders());
 
@@ -45,6 +52,11 @@ export class PhotoEditService {
       return response.data;
     } catch (error) {
       console.error("Error fetching crop from model EC2:", error.message);
+      if (error.response) {
+        console.error("Flask 응답 코드:", error.response.status);
+        console.error("Flask 응답 데이터:", error.response.data.toString());
+        console.error("Flask 응답 헤더:", error.response.headers);
+      }
       throw new Error("Model inference failed.");
     }
   }
