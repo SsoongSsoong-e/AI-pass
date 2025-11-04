@@ -15,7 +15,7 @@ OAuth Login으로 생성되며, 추후에 여러 OAuth 제공자와 연동 설�
 
 */
 
-@Entity('users')
+@Entity('Users')
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
