@@ -5,9 +5,16 @@ import { AppService } from './app.service';
 import { SocketModule } from './socket/socket.module';
 import { EditModule } from "./photo-edit/photo-edit.module";
 import { VerificationModule } from "./photo-verification/photo-verification.module";
+import { UsersModule } from './users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [VerificationModule, EditModule, SocketModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    VerificationModule, EditModule, SocketModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
