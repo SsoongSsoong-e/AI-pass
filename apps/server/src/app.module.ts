@@ -8,7 +8,7 @@ import { VerificationModule } from "./photo-verification/photo-verification.modu
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { User } from './users/entities/user.entity'
 @Module({
   imports: [
     ConfigModule.forRoot({
