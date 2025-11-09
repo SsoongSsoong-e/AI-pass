@@ -6,6 +6,7 @@ import {
     UpdateDateColumn,
     OneToMany,
 } from 'typeorm';
+import { UserRole } from '../user-role.enum';
 
 /* 
 User Entity
@@ -31,10 +32,10 @@ export class User {
 
     @Column({ 
         type: 'enum',
-        enum: ['user', 'admin'],
-        default: 'user',
+        enum: UserRole,
+        default: UserRole.USER,
     })
-    role: 'user' | 'admin';
+    role: UserRole;
 
     @CreateDateColumn()
     created_at: Date;
