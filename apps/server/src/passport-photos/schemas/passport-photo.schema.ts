@@ -10,7 +10,7 @@ export type PassportPhotoDocument = PassportPhoto & Document;
  * 실제 이미지 파일은 S3에 저장되고, 여기서는 메타데이터만 관리
  * 
  * 설계 원칙:
- * - PostgreSQL Users.id를 참조 (user_id)
+ * - PostgreSQL users.id를 참조 (user_id)
  * - 최대 10개 제한 (애플리케이션 레벨에서 관리)
  * - FIFO 방식으로 오래된 사진 자동 삭제
  * - 잠금 기능으로 특정 사진 보호
@@ -18,7 +18,7 @@ export type PassportPhotoDocument = PassportPhoto & Document;
 @Schema({ timestamps: true })
 export class PassportPhoto {
   /**
-   * PostgreSQL Users.id 참조
+   * PostgreSQL users.id 참조
    * 관계형 데이터베이스와의 연결점
    */
   @Prop({ required: true, index: true })
