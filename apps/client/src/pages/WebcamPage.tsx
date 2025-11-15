@@ -119,7 +119,7 @@ const WebcamPage = () => {
     };
     setupWebcam();
 
-    const captureInterval = setInterval(captureAndSendFrame, 1000);
+    const captureInterval = setInterval(captureAndSendFrame, 500);
 
     return () => {
       clearInterval(captureInterval);
