@@ -3,7 +3,12 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "docker-compose -p ai-pass-dev -f docker-compose.dev.yml up -d postgres mongodb && turbo dev",
+    "dev:down": "docker-compose -p ai-pass-dev -f docker-compose.dev.yml down",
+    "prod": "docker-compose -p ai-pass-prod up -d",
+    "prod:down": "docker-compose -p ai-pass-prod down",
+    "prod:build": "npm run build && docker-compose -p ai-pass-prod up -d --build",
+    "prod:logs": "docker-compose -p ai-pass-prod logs -f",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "start:debug": "nest start --debug --watch"

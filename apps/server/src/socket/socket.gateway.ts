@@ -9,6 +9,7 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import axios from "axios";
+import { ConfigService } from "@nestjs/config";
 import { SocketLoggingService } from "../socket-logging/socket-logging.service";
 import { RequestHistoryItem } from "../socket-logging/interfaces/request-history-item.interface";
 
@@ -39,12 +40,27 @@ interface RequestQueue {
   namespace: "socket",
   cors: { origin: "*" },
 })
+
 export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
+  private readonly modelServerUrl: string;
+
   // SocketLoggingService 주입
-  constructor(private readonly loggingService: SocketLoggingService) {}
+  constructor(
+    private readonly loggingService: SocketLoggingService,
+    private readonly configService: ConfigService,
+  ) {
+    // env.config.ts에서 환경에 맞는 URL 가져오기 (개발: localhost, 프로덕션: host.docker.internal)
+    // 'app' 네임스페이스로 등록되어 있으므로 'app.MODEL_SERVER_URL'로 접근
+    this.modelServerUrl = this.configService.get<string>('app.MODEL_SERVER_URL');
+    if (!this.modelServerUrl) {
+      // fallback: 환경 변수 또는 기본값
+      this.modelServerUrl = process.env.MODEL_SERVER_URL || 'http://localhost:5001';
+    }
+    console.log(`[SocketGateway] Model Server URL: ${this.modelServerUrl}`);
+  }
 
   // 클래스 레벨 저장소
   private requestQueues: Map<string, RequestQueue> = new Map();
@@ -96,7 +112,7 @@ export class SocketGateway {
   ): Promise<any> {
     try {
       const response = await axios.post(
-        "http://localhost:5001/process",
+        `${this.modelServerUrl}/process`,
         {
           input: input,
         },
@@ -238,7 +254,7 @@ export class SocketGateway {
 
   /**
    * 큐에서 다음 요청 처리
-   */
+   **/
   private async processNextRequest(clientId: string): Promise<void> {
     const queue = this.requestQueues.get(clientId);
     if (!queue || queue.queue.length === 0) {

@@ -1,0 +1,131 @@
+version: '3.9'
+
+# 프로덕션용 Docker Compose 설정
+# npm run prod 실행 시 모든 서비스를 Docker 컨테이너로 실행
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai-pass-postgres
+    restart: unless-stopped
+    networks:
+      - ai-pass-prod
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-ai_pass}
+      POSTGRES_USER: ${DATABASE_USER:-ai_pass}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-prod_password}  # 기본값: prod_password (프로덕션에서는 환경 변수로 설정 권장)
+    ports:
+      - '${FORWARD_POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER:-ai_pass} -d ${DATABASE_NAME:-ai_pass}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7.0
+    container_name: ai-pass-mongodb
+    restart: unless-stopped
+    networks:
+      - ai-pass-prod
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-ai-pass}
+    ports:
+      - '${FORWARD_MONGO_PORT:-27017}:27017'
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', 'db.adminCommand("ping")']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    container_name: ai-pass-server
+    networks:
+      - ai-pass-prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    # 프로덕션 환경 변수 설정
+    # 주의: 개발 환경(npm run dev)에서는 이 파일을 사용하지 않음
+    # 개발 환경은 docker-compose.dev.yml 사용
+    # 
+    # 환경 변수 설정 방법:
+    # 1. 환경 변수 직접 주입 (권장, 보안상 안전)
+    #    export NODE_ENV=production
+    #    export DATABASE_PASSWORD=xxx && docker-compose up -d
+    # 
+    # 2. .env.production 파일 사용
+    #    - .env.production 파일 생성 (Git에 커밋하지 않음)
+    #    - 아래 env_file 주석 해제
+    # env_file:
+    #   - .env.production
+    environment:
+      NODE_ENV: production  # 프로덕션 환경 명시
+      # Docker 컨테이너 내부에서는 서비스 이름 사용
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME:-ai_pass}
+      DATABASE_USER: ${DATABASE_USER:-ai_pass}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}  # 필수: 환경 변수로 설정
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DATABASE: ${MONGO_DATABASE:-ai-pass}
+      # OAuth 설정 (필수)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}  # 필수: 환경 변수로 설정
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}  # 필수: 환경 변수로 설정
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}  # 필수: 환경 변수로 설정
+      # 모델 서버 URL
+      MODEL_SERVER_URL: ${MODEL_SERVER_URL:-http://host.docker.internal:5001}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - '${FORWARD_SERVER_PORT:-5002}:5002'
+    # 프로덕션 환경에서는 볼륨 마운트 제거 (빌드된 파일 사용)
+    # volumes:
+    #   - ./apps/server:/usr/src/app/apps/server
+    #   - /usr/src/app/apps/server/node_modules
+    # command는 Dockerfile의 CMD 사용
+
+  client:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+    container_name: ai-pass-client
+    networks:
+      - ai-pass-prod
+    depends_on:
+      - server
+    environment:
+      NODE_ENV: production  # 프로덕션 환경 명시
+      VITE_BASE_URL: ${VITE_BASE_URL:-http://localhost:5002}
+    ports:
+      - '${FORWARD_CLIENT_PORT:-5173}:5173'
+    # 프로덕션 환경에서는 볼륨 마운트 제거 (빌드된 파일 사용)
+    # volumes:
+    #   - ./apps/client:/usr/src/app/apps/client
+    #   - /usr/src/app/apps/client/node_modules
+    #   - /usr/src/app/node_modules
+    # command는 Dockerfile의 CMD 사용 (이미 빌드됨)
+    stdin_open: true
+    tty: true
+
+networks:
+  ai-pass-prod:
+    name: ai-pass-prod-network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: ai-pass-postgres-prod
+  mongodb_data:
+    name: ai-pass-mongodb-prod
+

@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import * as sharp from "sharp";
 import { Buffer } from "buffer";
 import axios from "axios";
@@ -6,6 +7,18 @@ import * as FormData from "form-data";
 
 @Injectable()
 export class VerificationService {
+  private readonly modelServerUrl: string;
+
+  constructor(private readonly configService: ConfigService) {
+    // env.config.ts에서 환경에 맞는 URL 가져오기 (개발: localhost, 프로덕션: host.docker.internal)
+    // 'app' 네임스페이스로 등록되어 있으므로 'app.MODEL_SERVER_URL'로 접근
+    this.modelServerUrl = this.configService.get<string>('app.MODEL_SERVER_URL');
+    if (!this.modelServerUrl) {
+      // fallback: 환경 변수 또는 기본값
+      this.modelServerUrl = process.env.MODEL_SERVER_URL || 'http://localhost:5001';
+    }
+    console.log(`[VerificationService] Model Server URL: ${this.modelServerUrl}`);
+  }
   async getVerification(input: string): Promise<any> {
     const startTime = performance.now();
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -37,8 +50,7 @@ export class VerificationService {
         contentType: 'image/png',
       });
 
-      //const response = await axios.post("http://3.37.203.103:5001/process_binary", formData, {
-      const response = await axios.post("http://localhost:5001/process_binary", formData, {
+      const response = await axios.post(`${this.modelServerUrl}/process_binary`, formData, {
         headers: {
           ...formData.getHeaders(),
         },
