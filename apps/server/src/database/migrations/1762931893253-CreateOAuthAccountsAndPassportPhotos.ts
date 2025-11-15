@@ -15,7 +15,7 @@ export class CreateOAuthAccountsAndPassportPhotos1762931893253 implements Migrat
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 CONSTRAINT "PK_oauth_accounts_id" PRIMARY KEY ("id"),
                 CONSTRAINT "FK_oauth_accounts_user_id" FOREIGN KEY ("user_id") 
-                    REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE NO ACTION,
+                    REFERENCES users("id") ON DELETE CASCADE ON UPDATE NO ACTION,
                 CONSTRAINT "UQ_oauth_accounts_provider_user_id" 
                     UNIQUE ("provider", "provider_user_id")
             )

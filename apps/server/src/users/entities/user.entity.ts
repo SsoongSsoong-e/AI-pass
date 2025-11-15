@@ -4,7 +4,7 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToMany,
+    OneToOne,
 } from 'typeorm';
 import { UserRole } from '../user-role.enum';
 import { OAuthAccount } from './oauth-account.entity';
@@ -13,15 +13,18 @@ import { OAuthAccount } from './oauth-account.entity';
 User Entity
 
 사용자 기본 정보를 저장하는 테이블
-OAuth Login으로 생성되며, 같은 이메일이라도 다른 OAuth 제공자로 로그인하면 별도 사용자로 취급
+OAuth Login으로 생성되며, 다른 OAuth 제공자는 서로 다른 도메인을 사용하므로 이메일이 자동으로 구분됨
 
 설계 원칙:
 - 각 OAuth 제공자는 별도의 User로 취급 (완전 분리 방식)
-- 이메일은 provider를 포함한 고유한 형식으로 생성 (예: google_user@gmail.com)
+- 다른 OAuth 제공자는 서로 다른 도메인을 사용하므로 이메일이 자동으로 구분됨
+  (예: Google -> user@gmail.com, Kakao -> user@kakao.com)
+- 원본 이메일을 그대로 사용 (provider prefix 불필요)
 - OAuth 계정은 provider + provider_user_id 조합으로 식별
+- 현재 비즈니스 로직: OAuth 계정 하나당 항상 새로운 User 생성 (One-to-One 관계)
 */
 
-@Entity('Users')
+@Entity('users')
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
@@ -48,14 +51,14 @@ export class User {
     @UpdateDateColumn()
     updated_at: Date;
     /**
-     * User 조회 시 OAuth 정보를 함께 가져오기 위함
+     * User와 연결된 OAuth 계정 (One-to-One)
      * 
-     * 참고: 현재는 완전 분리 방식으로, 하나의 User는 하나의 OAuth 계정만 가짐
-     * 향후 필요시 여러 OAuth 제공자 연동 지원 가능하도록 설계됨
+     * 한 User는 정확히 하나의 OAuthAccount에 연결됨
+     * OAuth 계정 하나당 항상 새로운 User가 생성되므로 One-to-One 관계
      */
-    @OneToMany(() => OAuthAccount, (oauthAccount) => oauthAccount.user, {
+    @OneToOne(() => OAuthAccount, (oauthAccount) => oauthAccount.user, {
         cascade: true,
     })
-    oauth_accounts: OAuthAccount[];
+    oauth_account: OAuthAccount;
 }
 
