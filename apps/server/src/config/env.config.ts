@@ -35,8 +35,8 @@ export default registerAs('app', () => {
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
     GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || (
       isProduction 
-        ? 'https://your-production-domain.com/auth/google/callback'
-        : 'http://localhost:5002/auth/google/callback'
+        ? 'https://your-production-domain.com/api/auth/google/callback'
+        : 'http://localhost:5173/api/auth/google/callback'  // 프록시를 통해 처리
     ),
 
     // 시드 데이터 (개발용만)
@@ -61,6 +61,19 @@ export default registerAs('app', () => {
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_REGION: process.env.AWS_REGION,
     AWS_S3_BUCKET: process.env.AWS_S3_BUCKET,
+
+    // 세션 설정
+    SESSION_SECRET: process.env.SESSION_SECRET || '',
+    SESSION_MAX_AGE: process.env.SESSION_MAX_AGE 
+      ? parseInt(process.env.SESSION_MAX_AGE, 10) 
+      : 604800,  // 기본값: 7일
+
+    // 프론트엔드 URL (Sub-path 방식)
+    FRONTEND_URL: process.env.FRONTEND_URL || (
+      isProduction
+        ? 'https://example.com' // 배포 시에 환경 변수로 실제 도메인 설정해야함
+        : 'http://localhost:5173'
+    ),
   };
 
   return config;
