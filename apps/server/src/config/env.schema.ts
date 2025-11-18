@@ -44,6 +44,13 @@ export interface EnvironmentVariables {
   AWS_SECRET_ACCESS_KEY?: string;
   AWS_REGION?: string;
   AWS_S3_BUCKET?: string;
+
+  // 세션 설정
+  SESSION_SECRET: string;
+  SESSION_MAX_AGE?: number;  // 선택사항, 기본값 604800 (7일)
+
+  // 프론트엔드 URL (Sub-path 방식)
+  FRONTEND_URL?: string;
 }
 
 /**
@@ -63,6 +70,7 @@ export const REQUIRED_ENV_VARS: (keyof EnvironmentVariables)[] = [
   'GOOGLE_CLIENT_ID',
   'GOOGLE_CLIENT_SECRET',
   'GOOGLE_CALLBACK_URL',
+  'SESSION_SECRET',
 ];
 
 /**

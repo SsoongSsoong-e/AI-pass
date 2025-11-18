@@ -8,6 +8,10 @@ import { AppModule } from './app.module';
 import { Express } from 'express';
 import * as path from 'path'; // Import the path module
 import * as bodyParser from "body-parser";
+import * as session from 'express-session';
+import * as connectPgSimple from 'connect-pg-simple';
+import * as passport from 'passport';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   // const httpsOptions = {
@@ -22,12 +26,58 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     // httpsOptions,
   });
+
+  const configService = app.get(ConfigService);
+
+  // CORS 설정 (Sub-path 방식: 같은 도메인)
   app.enableCors({
-    origin: "*",
+    origin: configService.get<string>('FRONTEND_URL', 'http://localhost:5173'),
+    credentials: true,  // 세션 쿠키 전송 (공통 인증 필수)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Set-Cookie'],
   });
 
+  // 세션 스토어 설정 (PostgreSQL)
+  const PgSession = connectPgSimple(session);
+  const sessionStore = new PgSession({
+    conString: `postgresql://${configService.get<string>('DATABASE_USER')}:${configService.get<string>('DATABASE_PASSWORD')}@${configService.get<string>('DATABASE_HOST')}:${configService.get<number>('DATABASE_PORT')}/${configService.get<string>('DATABASE_NAME')}`,
+    tableName: 'sessions',
+    createTableIfMissing: true,  // 테이블 자동 생성
+    pruneSessionInterval: 86400,  // 24시간마다 만료된 세션 삭제
+  });
 
-  // 본문 크기 제한 설정 (50MB로 설정 예시)
+  // 세션 미들웨어 설정 (공통 인증: 모든 경로에 적용)
+  app.use(
+    session({
+      store: sessionStore,
+      secret: configService.get<string>('SESSION_SECRET'),
+      resave: false,
+      saveUninitialized: false,
+      name: 'connect.sid',
+      cookie: {
+        maxAge: configService.get<number>('SESSION_MAX_AGE', 604800) * 1000,
+        httpOnly: true,  // XSS 방지
+        secure: process.env.NODE_ENV === 'production',  // HTTPS 전용
+        sameSite: 'lax',  // CSRF 방지 (Sub-path 방식)
+        path: '/',  // 모든 경로에서 쿠키 사용
+      },
+    })
+  );
+
+  // Passport 미들웨어 설정
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Rolling Session 미들웨어 (모든 API 호출 시 세션 갱신)
+  app.use((req, res, next) => {
+    if (req.session && req.isAuthenticated && req.isAuthenticated()) {
+      req.session.touch();  // 세션 만료 시간 자동 갱신
+    }
+    next();
+  });
+
+  // 본문 파서 설정 (세션 이후에 배치)
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
   app.useStaticAssets(join(__dirname, "../..", "static"));
