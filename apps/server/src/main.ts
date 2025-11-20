@@ -67,7 +67,17 @@ async function bootstrap() {
 
   // Passport 미들웨어 설정
   app.use(passport.initialize());
-  app.use(passport.session());
+  
+  // 임시: photo-edit 경로는 세션 체크 우회 (나중에 로그인 기능 추가 시 수정)
+  app.use((req, res, next) => {
+    const isPhotoEditPath = req.path?.startsWith('/photo-edit');
+    if (isPhotoEditPath) {
+      // photo-edit 경로는 passport.session() 미들웨어를 우회
+      return next();
+    }
+    // 다른 경로는 passport.session() 적용
+    passport.session()(req, res, next);
+  });
 
   // Rolling Session 미들웨어 (모든 API 호출 시 세션 갱신)
   app.use((req, res, next) => {

@@ -6,9 +6,9 @@ import { AuthService } from '../auth.service';
 
 /**
  * Google OAuth Strategy
- * 
+ *
  * Google OAuth 2.0 인증을 처리하는 Passport Strategy
- * 
+ *
  * Flow:
  * 1. 사용자가 /auth/google 접근
  * 2. Google 로그인 페이지로 리다이렉트
@@ -56,7 +56,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
   /**
    * Google OAuth 콜백 처리
-   * 
+   *
    * @param accessToken Google에서 발급한 Access Token (사용 후 폐기)
    * @param refreshToken Refresh Token (사용 안 함)
    * @param profile Google 사용자 프로필 정보
@@ -88,7 +88,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     try {
       // AuthService에서 사용자 찾기 또는 생성 (완전 분리 방식)
       const user = await this.authService.findOrCreateUser(userInfo);
-      
       // Passport가 req.user에 저장할 객체 반환
       return done(null, user);
     } catch (error) {

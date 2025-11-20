@@ -7,7 +7,9 @@ import { OAuthAccount } from '../users/entities/oauth-account.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { SessionStrategy } from './strategies/session.strategy';
 import { SessionSerializer } from './serializers/passport.serializer';
+import { AuthenticatedGuard } from './guards/authenticated.guard';
 
 /**
  * AuthModule
@@ -24,9 +26,11 @@ import { SessionSerializer } from './serializers/passport.serializer';
   providers: [
     AuthService,
     GoogleStrategy,
+    SessionStrategy,
     SessionSerializer,
+    AuthenticatedGuard,
   ],
-  exports: [AuthService],
+  exports: [AuthService, AuthenticatedGuard], // Guard export
 })
 export class AuthModule {}
 
