@@ -74,6 +74,11 @@ export default registerAs('app', () => {
         ? 'https://example.com' // 배포 시에 환경 변수로 실제 도메인 설정해야함
         : 'http://localhost:5173'
     ),
+
+    // 인증 활성화 여부
+    // 로그인 기능 완성 전까지는 false로 설정하여 인증 없이 사용
+    // main branch 배포 시 AUTH_ENABLED=true로 설정하여 재활성화
+    AUTH_ENABLED: process.env.AUTH_ENABLED === 'true' || false,
   };
 
   return config;
