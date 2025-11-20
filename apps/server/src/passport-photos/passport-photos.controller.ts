@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery, ApiCookieAuth } from '@nestjs/swagger';
 import { PassportPhotosService } from './passport-photos.service';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 import { Request } from 'express';
 import { User } from '../users/entities/user.entity';
 
@@ -22,13 +22,11 @@ const MAX_PHOTOS_PER_USER = 10;
  * PassportPhotosController
  * 
  * Passport Photos 관련 API 엔드포인트
- * 
- * TODO: 세션 설정 완료 후 AuthenticatedGuard로 변경 예정
  */
 @ApiTags('passport-photos')
 @ApiCookieAuth('connect.sid')
 @Controller('passport-photos')
-@UseGuards(AuthGuard('session')) // 임시: 세션 설정 완료 후 변경
+@UseGuards(AuthenticatedGuard)
 export class PassportPhotosController {
   constructor(
     private readonly passportPhotosService: PassportPhotosService,
@@ -68,9 +66,29 @@ export class PassportPhotosController {
           properties: {
             _id: { type: 'string' },
             user_id: { type: 'number', example: 1 },
-            s3_key: { type: 'string', example: 'photos/user123/photo_1699123456.jpg' },
-            is_locked: { type: 'boolean', example: false },
+            photos: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  photo_id: { type: 'string' },
+                  s3_key: { type: 'string' },
+                  is_locked: { type: 'boolean' },
+                  created_at: { type: 'string', format: 'date-time' },
+                }
+              }
+            },
+            _stats: {
+              type: 'object',
+              properties: {
+                total: { type: 'number' },
+                locked: { type: 'number' },
+                unlocked: { type: 'number' },
+                oldest_unlocked_index: { type: 'number' },
+              }
+            },
             created_at: { type: 'string', format: 'date-time' },
+            updated_at: { type: 'string', format: 'date-time' },
           }
         }
       }
@@ -152,9 +170,9 @@ export class PassportPhotosController {
   async getPhotos(@Req() req: Request) {
     const user = req.user as User;
     const photos = await this.passportPhotosService.getPhotosByUserId(user.id);
-    
+
     const count = await this.passportPhotosService.getPhotoCount(user.id);
-    
+
     return {
       photos,
       count: {
@@ -222,8 +240,7 @@ export class PassportPhotosController {
           items: {
             type: 'object',
             properties: {
-              _id: { type: 'string' },
-              user_id: { type: 'number', example: 1 },
+              photo_id: { type: 'string', example: 'photo_1699123456_abc123' },
               s3_key: { type: 'string', example: 'photos/user123/photo_1699123456.jpg' },
               is_locked: { type: 'boolean', example: true },
               created_at: { type: 'string', format: 'date-time' },

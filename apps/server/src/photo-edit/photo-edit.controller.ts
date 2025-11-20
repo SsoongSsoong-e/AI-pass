@@ -5,6 +5,7 @@ import {
   UploadedFile,
   Res,
   Body,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -14,9 +15,13 @@ import { PassportPhotoDocument } from "../passport-photos/schemas/passport-photo
 import { Response } from "express";
 import * as fs from "fs";
 import * as path from "path";
+// 임시: 인증 관련 import 제거 (나중에 로그인 기능 추가 시 다시 추가)
+// import { Public } from "../auth/decorators/public.decorator";
+// import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 
 @ApiTags('photo-edit')
 @Controller("photo-edit")
+// 임시: 가드 없이 사용 (나중에 로그인 기능 추가 시 @UseGuards(AuthenticatedGuard) 추가)
 export class PhotoEditController {
   constructor(
     private readonly photoEditService: PhotoEditService,
@@ -24,6 +29,7 @@ export class PhotoEditController {
   ) {}
 
   @Post()
+  // 임시: 인증 없이 사용 가능 (나중에 로그인 기능 추가 시 @UseGuards(AuthenticatedGuard) 추가)
   @UseInterceptors(FileInterceptor("image"))
   @ApiOperation({
     summary: '이미지 편집',
@@ -89,6 +95,7 @@ export class PhotoEditController {
    * TODO: 세션 인증 추가 후 수정 필요
    */
   @Post("save")
+  // 임시: 인증 없이 사용 가능 (나중에 로그인 기능 추가 시 @UseGuards(AuthenticatedGuard) 추가)
   @UseInterceptors(FileInterceptor("image"))
   @ApiOperation({
     summary: '편집된 사진 저장',

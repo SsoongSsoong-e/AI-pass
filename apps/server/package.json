@@ -17,7 +17,7 @@
     "migration:run": "npx typeorm-ts-node-commonjs -d src/database/data-source.ts migration:run",
     "migration:revert": "npx typeorm-ts-node-commonjs -d src/database/data-source.ts migration:revert",
     "migration:show": "npx typeorm-ts-node-commonjs -d src/database/data-source.ts migration:show",
-    "migration:passport-photos": "ts-node -r tsconfig-paths/register src/database/migrations/migrate-passport-photos-to-mongodb.ts",
+    "migration:hybrid-structure": "ts-node -r tsconfig-paths/register src/database/migrations/migrate-to-hybrid-structure.ts",
     "seed": "ts-node -r tsconfig-paths/register src/database/seed.ts"
   },
   "dependencies": {
@@ -45,6 +45,7 @@
     "mime-types": "^2.1.35",
     "mongoose": "^8.19.3",
     "passport": "^0.7.0",
+    "passport-custom": "^1.1.1",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.16.3",
     "python-shell": "^5.0.0",
