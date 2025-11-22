@@ -2,13 +2,14 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 import path from "path";
+import tailwindcss from "@tailwindcss/vite";
 
 // 환경 변수 확인
 const isProduction = process.env.NODE_ENV === 'production';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), svgr()],
+  plugins: [react(), svgr(), tailwindcss()],
   base: "/",
   resolve: {
     alias: {
