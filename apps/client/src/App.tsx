@@ -2,11 +2,8 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { RootProvider } from "./providers/RootProvider";
 import "./App.css";
 import LandingPage from "./pages/LandingPage";
-import NewLandingPage from "./pages/NewLandingPage"
-import NewGuidePage from "./pages/NewGuidePage"
+import GuidePage from "./pages/GuidePage";
 import WebcamPage from "./pages/WebcamPage";
-import UserGalleryPage from "./pages/UserGalleryPage"
-import AuthCallback from "./pages/AuthCallback";
 import { styled, ThemeProvider } from "styled-components";
 import ConfirmPage from "./pages/ConfirmPage";
 import theme from "./style/theme";
@@ -16,11 +13,7 @@ import AlbumUploadPage from "./pages/AlbumUploadPage";
 const routes = [
   {
     path: "/",
-    element: <NewLandingPage />,
-  },
-  {
-    path: '/auth/callback',
-    element: <AuthCallback />
+    element: <LandingPage />,
   },
   {
     path: "/album",
@@ -28,11 +21,7 @@ const routes = [
   },
   {
     path: "/guide",
-    element: <NewGuidePage />,
-  },
-  {
-    path: "/gallery",
-    element: <UserGalleryPage />,
+    element: <GuidePage />,
   },
   {
     path: "/webcam",
@@ -52,16 +41,7 @@ const routes = [
   },
 ];
 
-const router = createBrowserRouter(routes, {
-  future: {
-    v7_startTransition: true,
-    v7_relativeSplatPath: true,
-    v7_fetcherPersist: true,
-    v7_normalizeFormMethod: true,
-    v7_partialHydration: true,
-    v7_skipActionErrorRevalidation: true,
-  },
-});
+const router = createBrowserRouter(routes);
 
 function App() {
   return (

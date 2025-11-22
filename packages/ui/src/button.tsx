@@ -8,26 +8,23 @@ interface ButtonProps {
   children: ReactNode;
   className?: string;
   clickButton?: () => void;
-  disabled?: boolean;
 }
 
-export const Button = ({ children, className, clickButton, disabled }: ButtonProps) => {
+export const Button = ({ children, className, clickButton }: ButtonProps) => {
   return (
-    <StyledButton className={className} onClick={clickButton} disabled={disabled}>
+    <StyledButton className={className} onClick={clickButton}>
       {children}
     </StyledButton>
   );
 };
 
-const StyledButton = styled.button<{ className?: string; disabled?: boolean }>`
+const StyledButton = styled.button<{ className?: string }>`
   margin: 8px;
   border-radius: 12px;
   padding: 18px 16px;
   font-size: 18px;
   line-height: 32px;
   font-weight: 500;
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-  opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 
   ${({ className, theme }) => {
     switch (className) {

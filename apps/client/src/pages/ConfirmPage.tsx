@@ -54,11 +54,8 @@ const ConfirmPage = () => {
 
         const imgUrl = URL.createObjectURL(res.data);
         navigate(`/result?image=${encodeURIComponent(imgUrl)}`);
-      } catch (err: any) {
-        console.error("사진 편집 실패:", err);
-        alert("사진 편집에 실패했습니다. 다시 시도해주세요.");
-      } finally {
-        setIsProcessing(false);
+      } catch (err) {
+        console.error(err);
       }
     }
   };
