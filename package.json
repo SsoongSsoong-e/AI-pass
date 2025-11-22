@@ -3,9 +3,15 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "docker-compose -p ai-pass-dev -f docker-compose.dev.yml up -d postgres mongodb && turbo dev",
+    "dev:down": "docker-compose -p ai-pass-dev -f docker-compose.dev.yml down",
+    "prod": "docker-compose -p ai-pass-prod up -d",
+    "prod:down": "docker-compose -p ai-pass-prod down",
+    "prod:build": "npm run build && docker-compose -p ai-pass-prod up -d --build",
+    "prod:logs": "docker-compose -p ai-pass-prod logs -f",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "start:debug": "nest start --debug --watch"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
@@ -21,11 +27,13 @@
     "packages/*"
   ],
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.17",
     "@types/styled-components": "^5.1.34",
     "chalk": "^5.3.0",
     "path-scurry": "^2.0.0",
     "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.13",
+    "tailwindcss": "^4.1.17",
     "vite": "^6.0.2",
     "vite-plugin-svgr": "^4.3.0"
   }

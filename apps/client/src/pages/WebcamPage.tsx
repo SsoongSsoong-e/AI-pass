@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { useEffect, useState, useRef, useContext } from "react";
 import GuideLine from "../assets/guideLine.svg";
 import CheckSymbol from "../assets/checkSymbol.svg?react";
@@ -7,6 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@repo/ui/button";
 import { Modal } from "@repo/ui/modal";
 import { PhotoContext } from "../providers/RootProvider";
+import SidebarNavigation from '../components/SidebarNavigation';
+
+const TEMP_PROFILE = {
+  imageUrl: '',
+  userName: 'User Name'
+};
 
 const WebcamPage = () => {
   const navigate = useNavigate();
@@ -15,9 +20,14 @@ const WebcamPage = () => {
   const socketRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isValid, setIsValid] = useState<boolean>(false);
-  const { verificationResult, setVerificationResult } =
-    useContext(PhotoContext);
+  const { verificationResult, setVerificationResult } = useContext(PhotoContext);
   const [countdown, setCountdown] = useState<number>(3);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const handleLogout = () => {
+    // 로그아웃 로직
+    console.log('로그아웃');
+  };
 
   const captureImage = () => {
     if (videoRef.current) {
@@ -119,7 +129,7 @@ const WebcamPage = () => {
     };
     setupWebcam();
 
-    const captureInterval = setInterval(captureAndSendFrame, 1000);
+    const captureInterval = setInterval(captureAndSendFrame, 500);
 
     return () => {
       clearInterval(captureInterval);
@@ -170,133 +180,110 @@ const WebcamPage = () => {
   ];
 
   return (
-    <Container>
-      <>{isLoading ? "loading..." : ""}</>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 flex flex-col items-center justify-center px-4 py-8 relative">
+      {/* 사이드바 네비게이션 */}
+      <SidebarNavigation 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        userName={TEMP_PROFILE.userName}
+        userImage={TEMP_PROFILE.imageUrl}
+        onLogout={handleLogout}
+      />
+
+      {/* 프로필 아바타 - 좌상단 */}
+      <div className="absolute top-6 left-6 z-20">
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="w-14 h-14 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center overflow-hidden shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+        >
+          {TEMP_PROFILE.imageUrl ? (
+            <img 
+              src={TEMP_PROFILE.imageUrl} 
+              alt={TEMP_PROFILE.userName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-xl font-bold text-gray-700">
+              {TEMP_PROFILE.userName.charAt(0).toUpperCase()}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* 로딩 표시 */}
+      {isLoading && <div className="text-gray-600 mb-4">loading...</div>}
+      
+      {/* 카운트다운 모달 */}
       <Modal visible={isValid}>
-        <>
+        <div className="text-center">
           움직이지 말아주세요. 움직이면 재촬영이 필요합니다.
-          <br /> <br /> {countdown > 0 ? countdown : <br />}
-        </>
+          <br />
+          <br />
+          {countdown > 0 ? <span className="text-2xl font-bold">{countdown}</span> : <br />}
+        </div>
       </Modal>
-      <CameraContainer id="CameraContainer">
-        <Canvas ref={canvasRef} id="Canvas" />
-        <Line src={GuideLine} alt="guide line" />
-        <VideoContainer id="VideoContainer">
-          <Video
+
+      {/* 카메라 컨테이너 */}
+      <div className="relative w-80 h-[414px] mb-6">
+        <canvas 
+          ref={canvasRef} 
+          className="absolute top-0 left-0 w-80 h-[414px]"
+        />
+        
+        {/* 가이드라인 */}
+        <img 
+          src={GuideLine} 
+          alt="guide line"
+          className="absolute top-0 left-0 w-80 h-[414px] z-10 pointer-events-none"
+        />
+        
+        {/* 비디오 */}
+        <div className="absolute top-0 left-0 w-80 h-[414px]">
+          <video
             ref={videoRef}
             onLoadedMetadata={handleMetadataLoad}
             autoPlay
             loop
             muted
             playsInline
-            id="Video"
+            className="w-80 h-[414px] object-cover"
+            style={{ transform: 'scaleX(-1)' }}
           />
-        </VideoContainer>
-      </CameraContainer>
-      <Checklist id="Checklist">
-        <ChecklistHeader>모든 규정을 지키면 촬영할 수 있어요</ChecklistHeader>
-        {verificationResult
-          ? verificationResult.map((item, idx) => (
-              <ChecklistContents key={idx} active={item}>
-                <Check active={item} />
-                {checklistArr[idx]}
-              </ChecklistContents>
-            ))
-          : [0, 0, 0, 0, 0].map((item, idx) => (
-              <ChecklistContents key={idx} active={item}>
-                <Check active={item} />
-                {checklistArr[idx]}
-              </ChecklistContents>
-            ))}
-      </Checklist>
+        </div>
+      </div>
+
+      {/* 체크리스트 */}
+      <div className="w-80 h-[230px] border-2 border-indigo-700 rounded-xl bg-white z-20 flex flex-col overflow-y-auto mb-6 shadow-lg">
+        <div className="sticky top-0 bg-white font-semibold text-base leading-[38px] px-3 border-b border-gray-200">
+          모든 규정을 지키면 촬영할 수 있어요
+        </div>
+        
+        {(verificationResult || [0, 0, 0, 0, 0]).map((item, idx) => (
+          <div 
+            key={idx}
+            className={`flex items-center gap-3 px-5 py-2.5 font-semibold text-base ${
+              item ? 'text-indigo-600' : 'text-gray-400'
+            }`}
+          >
+            <CheckSymbol 
+              className={`w-5 h-5 flex-shrink-0 ${
+                item ? '[&_path]:stroke-indigo-600' : '[&_path]:stroke-gray-400'
+              }`}
+            />
+            {checklistArr[idx]}
+          </div>
+        ))}
+      </div>
+
+      {/* 촬영 버튼 */}
       <Button
         className={isValid ? "primary" : "inactive"}
         clickButton={isValid ? () => handleCaptureClick() : () => {}}
       >
         촬영
       </Button>
-    </Container>
+    </div>
   );
 };
 
 export default WebcamPage;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const CameraContainer = styled.div`
-  width: 320px;
-  height: 414px;
-  top: 40px;
-`;
-
-const Canvas = styled.canvas`
-  top: 40px;
-  width: 320px;
-  height: 414px;
-`;
-
-const Line = styled.img`
-  position: relative;
-  top: -414px;
-  z-index: 1;
-`;
-
-const VideoContainer = styled.div`
-  width: 320px;
-  height: 414px;
-  position: absolute;
-  top: 32px;
-`;
-
-const Video = styled.video`
-  transform: scaleX(-1);
-  object-fit: cover;
-  width: 320px;
-  height: 414px;
-`;
-
-const Checklist = styled.div`
-  width: 320px;
-  height: 230px;
-  border: 1px solid #0c1870;
-  border-radius: 12px;
-  background-color: #fff;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  overflow: scroll;
-  margin-bottom: 40px;
-`;
-
-const ChecklistHeader = styled.div`
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 38px;
-  letter-spacing: 1.2%;
-  position: sticky;
-  top: 0px;
-  margin-left: 10px;
-  background-color: #ffffff;
-`;
-
-const ChecklistContents = styled.div<{ active?: number }>`
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 32px;
-  letter-spacing: 1.2%;
-  margin: 10px 20px;
-  display: flex;
-  flex-direction: row;
-  color: ${({ active, theme }) => (active ? theme.colors.blue : "gray")};
-`;
-
-const Check = styled(CheckSymbol)<{ active?: number }>`
-  margin-right: 10px;
-  path {
-    stroke: ${({ active, theme }) => (active ? theme.colors.blue : "gray")};
-  }
-`;

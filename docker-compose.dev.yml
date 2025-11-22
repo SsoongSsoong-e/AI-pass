@@ -1,0 +1,61 @@
+version: '3.9'
+
+# 개발용 Docker Compose 설정
+# npm run dev 실행 시 자동으로 PostgreSQL과 MongoDB만 Docker 컨테이너로 실행
+# client와 server는 turbo dev로 로컬에서 실행됨
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: ai-pass-postgres-dev
+    restart: unless-stopped
+    networks:
+      - ai-pass-dev
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-ai_pass}
+      POSTGRES_USER: ${DATABASE_USER:-ai_pass}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-secret}
+    ports:
+      - '${FORWARD_POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER:-ai_pass} -d ${DATABASE_NAME:-ai_pass}']
+      
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: mongo:7.0
+    container_name: ai-pass-mongodb-dev
+    restart: unless-stopped
+    networks:
+      - ai-pass-dev
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-ai-pass}
+    ports:
+      - '${FORWARD_MONGO_PORT:-27017}:27017'
+    volumes:
+      - mongodb_data_dev:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', 'db.adminCommand("ping")']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 개발 환경에서는 client와 server를 로컬에서 실행
+  # turbo dev가 client와 server를 함께 실행함
+  # DB만 Docker 컨테이너로 실행하여 환경 일관성 유지
+
+networks:
+  ai-pass-dev:
+    name: ai-pass-dev-network
+    driver: bridge
+
+volumes:
+  postgres_data_dev:
+    name: ai-pass-postgres-dev
+  mongodb_data_dev:
+    name: ai-pass-mongodb-dev
+

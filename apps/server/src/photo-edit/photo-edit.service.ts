@@ -1,9 +1,22 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import axios from "axios";
 import * as FormData from "form-data";
 
 @Injectable()
 export class PhotoEditService {
+  private readonly modelServerUrl: string;
+
+  constructor(private readonly configService: ConfigService) {
+    // env.config.ts에서 환경에 맞는 URL 가져오기 (개발: localhost, 프로덕션: host.docker.internal)
+    // 'app' 네임스페이스로 등록되어 있으므로 'app.MODEL_SERVER_URL'로 접근
+    this.modelServerUrl = this.configService.get<string>('app.MODEL_SERVER_URL');
+    if (!this.modelServerUrl) {
+      // fallback: 환경 변수 또는 기본값
+      this.modelServerUrl = process.env.MODEL_SERVER_URL || 'http://localhost:5001';
+    }
+    console.log(`[PhotoEditService] Model Server URL: ${this.modelServerUrl}`);
+  }
   async getEditedPhoto(file: Express.Multer.File): Promise<any> {
     try {
       // 파일 버퍼 가져오기
@@ -28,13 +41,19 @@ export class PhotoEditService {
       const formData = new FormData();
       formData.append("image", fileBuffer, filename); // 파일 이름을 명시적으로 추가
 
+      // 요청 전: 로그
+      console.log("===== Flask .crop API 호출 직전 =====");
+      console.log("요청 파일명:", filename);
+      console.log("Buffer size:", fileBuffer.length);
+      console.log("Form headers:", formData.getHeaders());
+      
+
       console.log("Sending FormData to Flask server...");
       console.log("Headers:", formData.getHeaders());
 
       // 모델 서버 요청
       const response = await axios.post(
-        // "http://3.37.203.103:5001/crop",
-        "http://localhost:5001/crop",
+        `${this.modelServerUrl}/crop`,
         formData,
         {
           headers: formData.getHeaders(), // FormData에서 자동 생성된 헤더 사용
@@ -45,6 +64,11 @@ export class PhotoEditService {
       return response.data;
     } catch (error) {
       console.error("Error fetching crop from model EC2:", error.message);
+      if (error.response) {
+        console.error("Flask 응답 코드:", error.response.status);
+        console.error("Flask 응답 데이터:", error.response.data.toString());
+        console.error("Flask 응답 헤더:", error.response.headers);
+      }
       throw new Error("Model inference failed.");
     }
   }
