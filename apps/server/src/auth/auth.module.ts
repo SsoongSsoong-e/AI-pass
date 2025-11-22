@@ -19,7 +19,7 @@ import { AuthenticatedGuard } from './guards/authenticated.guard';
 @Module({
   imports: [
     ConfigModule, // 환경 변수 접근
-    PassportModule.register({ defaultStrategy: 'google' }),
+    PassportModule.register({ defaultStrategy: 'google', session: true }),
     TypeOrmModule.forFeature([User, OAuthAccount]),
   ],
   controllers: [AuthController],
