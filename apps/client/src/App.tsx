@@ -12,6 +12,7 @@ import ConfirmPage from "./pages/ConfirmPage";
 import theme from "./style/theme";
 import ResultPage from "./pages/ResultPage";
 import AlbumUploadPage from "./pages/AlbumUploadPage";
+import React from "react";
 
 const routes = [
   {
