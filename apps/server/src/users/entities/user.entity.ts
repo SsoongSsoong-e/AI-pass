@@ -38,7 +38,7 @@ export class User {
     @Column({ type: 'text', nullable: true})
     profile_picture: string | null;
 
-    @Column({ 
+    @Column({
         type: 'enum',
         enum: UserRole,
         default: UserRole.USER,
@@ -52,7 +52,7 @@ export class User {
     updated_at: Date;
     /**
      * User와 연결된 OAuth 계정 (One-to-One)
-     * 
+     *
      * 한 User는 정확히 하나의 OAuthAccount에 연결됨
      * OAuth 계정 하나당 항상 새로운 User가 생성되므로 One-to-One 관계
      */

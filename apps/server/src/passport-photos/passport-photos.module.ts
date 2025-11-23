@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportPhotosController } from './passport-photos.controller';
 import { PassportPhotosService } from './passport-photos.service';
 import { PassportPhoto, PassportPhotoSchema } from './schemas/passport-photo.schema';
+import { S3Module } from '../s3/s3.module';
+import { EditModule } from '../photo-edit/photo-edit.module';
 
 /**
  * PassportPhotosModule
@@ -15,6 +17,8 @@ import { PassportPhoto, PassportPhotoSchema } from './schemas/passport-photo.sch
     MongooseModule.forFeature([
       { name: PassportPhoto.name, schema: PassportPhotoSchema },
     ]),
+    S3Module,
+    forwardRef(() => EditModule), // forwardRef로 순환 의존성 해결
   ],
   controllers: [PassportPhotosController],
   providers: [PassportPhotosService],

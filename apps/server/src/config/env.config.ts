@@ -39,9 +39,10 @@ export default registerAs('app', () => {
         : 'http://localhost:5173/api/auth/google/callback'  // 프록시를 통해 처리
     ),
 
-    // 시드 데이터 (개발용만)
-    SEED_ADMIN_EMAIL: isDevelopment ? process.env.SEED_ADMIN_EMAIL : undefined,
-    SEED_ADMIN_USERNAME: isDevelopment ? process.env.SEED_ADMIN_USERNAME : undefined,
+    // Admin 이메일 목록 (쉼표로 구분된 문자열을 배열로 파싱)
+    ADMIN_EMAILS: process.env.ADMIN_EMAILS 
+      ? process.env.ADMIN_EMAILS.split(',').map(email => email.trim()).filter(email => email.length > 0)
+      : [],
 
     // 서버 포트
     SERVER_PORT: process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : 5002,

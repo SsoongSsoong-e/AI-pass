@@ -216,10 +216,38 @@ MODEL_SERVER_URL=http://host.docker.internal:5001
 | `MODEL_SERVER_URL` | AI 모델 서버 URL | `http://host.docker.internal:5001` |
 | `SEED_ADMIN_EMAIL` | 관리자 이메일 (시드 데이터) | - |
 | `SEED_ADMIN_USERNAME` | 관리자 사용자명 (시드 데이터) | - |
-| `AWS_ACCESS_KEY_ID` | AWS 액세스 키 (S3, 향후 구현) | - |
-| `AWS_SECRET_ACCESS_KEY` | AWS 시크릿 키 (S3, 향후 구현) | - |
-| `AWS_REGION` | AWS 리전 (S3, 향후 구현) | - |
-| `AWS_S3_BUCKET` | S3 버킷 이름 (향후 구현) | - |
+| `AWS_ACCESS_KEY_ID` | AWS IAM 사용자 액세스 키 ID | IAM 사용자 자격 증명에서 발급 |
+| `AWS_SECRET_ACCESS_KEY` | AWS IAM 사용자 시크릿 액세스 키 | IAM 사용자 자격 증명에서 발급 |
+| `AWS_REGION` | AWS 리전 | `ap-northeast-2` (서울) |
+| `AWS_S3_BUCKET` | S3 버킷 이름 (ARN 형식 지원) | `ai-pass` 또는 `arn:aws:s3:::ai-pass` |
+
+### AWS S3 설정 가이드
+
+S3를 사용하여 여권 사진을 저장하려면 다음 환경 변수를 설정해야 합니다:
+
+```bash
+# S3 버킷 설정
+# 버킷 이름만 사용하거나 ARN 형식 모두 지원
+AWS_S3_BUCKET=ai-pass
+# 또는 ARN 형식: AWS_S3_BUCKET=arn:aws:s3:::ai-pass
+
+# AWS 리전 (서울 리전)
+AWS_REGION=ap-northeast-2
+
+# AWS IAM 사용자 자격 증명
+# IAM 사용자: arn:aws:iam::931646335675:user/namu
+AWS_ACCESS_KEY_ID=your_aws_access_key_id_here
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
+```
+
+**주의사항**:
+- AWS 자격 증명은 절대 Git에 커밋하지 마세요
+- `.env.local` 파일에만 실제 값을 저장하세요
+- IAM 사용자는 S3 버킷에 대한 읽기/쓰기 권한이 있어야 합니다
+
+**S3 연결 상태 확인**:
+- Admin 권한이 있는 사용자는 `GET /s3/health` 엔드포인트를 통해 S3 연결 상태를 확인할 수 있습니다
+- `GET /s3/bucket-info` 엔드포인트로 버킷 정보를 조회할 수 있습니다
 
 ---
 

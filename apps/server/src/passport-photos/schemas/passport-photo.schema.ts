@@ -4,6 +4,14 @@ import { Document } from 'mongoose';
 export type PassportPhotoDocument = PassportPhoto & Document;
 
 /**
+ * Presigned URL 정보 인터페이스
+ */
+export interface PresignedUrlInfo {
+  url: string;
+  expiresAt: number; // 타임스탬프 (밀리초)
+}
+
+/**
  * Photo 메타데이터 인터페이스
  */
 export interface PhotoMetadata {
@@ -11,6 +19,7 @@ export interface PhotoMetadata {
   s3_key: string;
   is_locked: boolean;
   created_at: Date;
+  presignedUrl?: PresignedUrlInfo; // 선택적 필드 (Presigned URL 포함 시)
 }
 
 /**
@@ -25,10 +34,10 @@ export interface PhotoStats {
 
 /**
  * PassportPhoto Schema (MongoDB) - 하이브리드 구조 (배열 + 메타데이터)
- * 
+ *
  * 사용자당 하나의 문서로 관리하며, photos 배열에 사진 메타데이터 저장
  * 실제 이미지 파일은 S3에 저장되고, 여기서는 메타데이터만 관리
- * 
+ *
  * 설계 원칙:
  * - PostgreSQL users.id를 참조 (user_id)
  * - 사용자당 하나의 문서 (1:1)
@@ -73,6 +82,13 @@ export class PassportPhoto {
       created_at: { 
         type: Date, 
         default: Date.now 
+      },
+      presignedUrl: {
+        type: {
+          url: { type: String },
+          expiresAt: { type: Number }
+        },
+        required: false
       }
     }],
     default: []

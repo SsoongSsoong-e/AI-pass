@@ -23,10 +23,10 @@ export class SessionSerializer extends PassportSerializer {
 
   /**
    * 로그인 시 세션에 저장할 정보 결정
-   * 
+   *
    * @param user User 엔티티 객체
    * @param done 콜백 함수
-   * 
+   *
    * 세션에는 user.id만 저장 (최소 정보만 저장)
    * - 세션 데이터 최소화 (메모리 절약)
    * - 사용자 정보 변경 시 세션 업데이트 불필요
@@ -38,10 +38,10 @@ export class SessionSerializer extends PassportSerializer {
 
   /**
    * API 요청 시 세션에서 사용자 정보 복원
-   * 
+   *
    * @param id 세션에 저장된 user.id
    * @param done 콜백 함수
-   * 
+   *
    * 세션에서 user.id를 추출하여 DB에서 최신 User 정보 조회
    * 조회한 User 객체를 req.user에 저장
    */

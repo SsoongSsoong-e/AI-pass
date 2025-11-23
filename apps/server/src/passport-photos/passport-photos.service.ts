@@ -2,6 +2,8 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PassportPhoto, PassportPhotoDocument, PhotoMetadata, PhotoStats } from './schemas/passport-photo.schema';
+import { S3Service } from '../s3/s3.service';
+import { UpdatePhotoDto } from './dto/update-photo.dto';
 
 const MAX_PHOTOS_PER_USER = 10;
 
@@ -17,8 +19,9 @@ const MAX_PHOTOS_PER_USER = 10;
 @Injectable()
 export class PassportPhotosService {
   constructor(
-    @InjectModel(PassportPhoto.name) 
+    @InjectModel(PassportPhoto.name)
     private passportPhotoModel: Model<PassportPhotoDocument>,
+    private readonly s3Service: S3Service,
   ) {}
 
   /**
@@ -123,6 +126,15 @@ export class PassportPhotosService {
     console.log(`[PassportPhotosService] 새 사진 생성 중 (FIFO)...`);
     console.log(`[PassportPhotosService] 오래된 사진 삭제 중 - photoId: ${oldestPhoto.photo_id}`);
 
+    // S3 삭제 먼저 (실제 파일이 삭제된 후 DB 업데이트)
+    try {
+      await this.s3Service.deleteObject(oldestPhoto.s3_key);
+      console.log(`[PassportPhotosService] S3 삭제 완료: ${oldestPhoto.s3_key}`);
+    } catch (err) {
+      console.error(`[PassportPhotosService] S3 삭제 실패: ${oldestPhoto.s3_key}`, err);
+      throw new BadRequestException('S3 파일 삭제에 실패했습니다.');
+    }
+
     // Shift 최적화: 마지막 요소와 교체 후 pop (O(1))
     if (oldestUnlockedIndex < photos.length - 1) {
       [photos[oldestUnlockedIndex], photos[photos.length - 1]] = 
@@ -139,30 +151,55 @@ export class PassportPhotosService {
     await userDoc.save();
 
     console.log(`[PassportPhotosService] 새 사진 생성 완료 - photoId: ${photoId}`);
-    
-    // TODO: S3에서도 삭제 (S3Service 구현 후 추가)
-    // await this.s3Service.deleteObject(oldestPhoto.s3_key).catch((err) => {
-    //   console.error(`S3 삭제 실패: ${oldestPhoto.s3_key}`, err);
-    // });
 
     return userDoc;
   }
 
   /**
    * 사용자별 사진 목록 조회 (최신순, 잠금 상태 포함)
+   * @param userId 사용자 ID
+   * @param options 필터링 옵션 (filter: 'locked' | 'unlocked')
    */
-  async getPhotosByUserId(userId: number): Promise<PhotoMetadata[]> {
+  async getPhotosByUserId(
+    userId: number,
+    options?: { filter?: 'locked' | 'unlocked' }
+  ): Promise<PhotoMetadata[]> {
     const userDoc = await this.passportPhotoModel.findOne({ user_id: userId });
     
     if (!userDoc || !userDoc.photos) {
       return [];
     }
 
+    let photos = userDoc.photos.slice();
+
+    // 필터링 옵션 적용
+    if (options?.filter === 'locked') {
+      photos = photos.filter(p => p.is_locked);
+    } else if (options?.filter === 'unlocked') {
+      photos = photos.filter(p => !p.is_locked);
+    }
+
     // 최신순 정렬 (created_at 내림차순)
-    return userDoc.photos
-      .slice()
+    return photos
       .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
       .slice(0, MAX_PHOTOS_PER_USER);
+  }
+
+  /**
+   * photo_id로 사진 조회
+   * @param userId 사용자 ID
+   * @param photoId 사진 ID
+   * @returns 사진 메타데이터 또는 null
+   */
+  async getPhotoById(userId: number, photoId: string): Promise<PhotoMetadata | null> {
+    const userDoc = await this.passportPhotoModel.findOne({ user_id: userId });
+    
+    if (!userDoc || !userDoc.photos) {
+      return null;
+    }
+
+    const photo = userDoc.photos.find(p => p.photo_id === photoId);
+    return photo || null;
   }
 
   /**
@@ -191,7 +228,43 @@ export class PassportPhotosService {
   }
 
   /**
-   * 사진 잠금
+   * 사진 수정 (잠금/잠금 해제 통합)
+   * @param userId 사용자 ID
+   * @param photoId 사진 ID
+   * @param dto 수정할 필드 (is_locked)
+   */
+  async updatePhoto(userId: number, photoId: string, dto: UpdatePhotoDto): Promise<void> {
+    const userDoc = await this.passportPhotoModel.findOne({ user_id: userId });
+
+    if (!userDoc || !userDoc.photos) {
+      throw new BadRequestException('사진을 찾을 수 없습니다.');
+    }
+
+    const photoIndex = userDoc.photos.findIndex(p => p.photo_id === photoId);
+
+    if (photoIndex === -1) {
+      throw new BadRequestException('사진을 찾을 수 없습니다.');
+    }
+
+    // is_locked 필드만 업데이트
+    if (dto.is_locked !== undefined) {
+      if (dto.is_locked === userDoc.photos[photoIndex].is_locked) {
+        throw new BadRequestException(
+          dto.is_locked 
+            ? '이미 잠겨있는 사진입니다.' 
+            : '이미 잠금 해제된 사진입니다.'
+        );
+      }
+      userDoc.photos[photoIndex].is_locked = dto.is_locked;
+    }
+
+    // 통계 업데이트
+    userDoc._stats = this.calculateStats(userDoc.photos);
+    await userDoc.save();
+  }
+
+  /**
+   * @deprecated lockPhoto는 updatePhoto로 통합되었습니다. updatePhoto를 사용하세요.
    */
   async lockPhoto(userId: number, s3Key: string): Promise<void> {
     const userDoc = await this.passportPhotoModel.findOne({ user_id: userId });
@@ -200,26 +273,17 @@ export class PassportPhotosService {
       throw new BadRequestException('사진을 찾을 수 없습니다.');
     }
 
-    const photoIndex = userDoc.photos.findIndex(p => p.s3_key === s3Key);
+    const photo = userDoc.photos.find(p => p.s3_key === s3Key);
 
-    if (photoIndex === -1) {
+    if (!photo) {
       throw new BadRequestException('사진을 찾을 수 없습니다.');
     }
 
-    if (userDoc.photos[photoIndex].is_locked) {
-      throw new BadRequestException('이미 잠겨있는 사진입니다.');
-    }
-
-    // 잠금 업데이트
-    userDoc.photos[photoIndex].is_locked = true;
-    
-    // 통계 업데이트
-    userDoc._stats = this.calculateStats(userDoc.photos);
-    await userDoc.save();
+    await this.updatePhoto(userId, photo.photo_id, { is_locked: true });
   }
 
   /**
-   * 사진 잠금 해제
+   * @deprecated unlockPhoto는 updatePhoto로 통합되었습니다. updatePhoto를 사용하세요.
    */
   async unlockPhoto(userId: number, s3Key: string): Promise<void> {
     const userDoc = await this.passportPhotoModel.findOne({ user_id: userId });
@@ -228,35 +292,28 @@ export class PassportPhotosService {
       throw new BadRequestException('사진을 찾을 수 없습니다.');
     }
 
-    const photoIndex = userDoc.photos.findIndex(p => p.s3_key === s3Key);
+    const photo = userDoc.photos.find(p => p.s3_key === s3Key);
 
-    if (photoIndex === -1) {
+    if (!photo) {
       throw new BadRequestException('사진을 찾을 수 없습니다.');
     }
 
-    if (!userDoc.photos[photoIndex].is_locked) {
-      throw new BadRequestException('잠겨있지 않은 사진입니다.');
-    }
-
-    // 잠금 해제
-    userDoc.photos[photoIndex].is_locked = false;
-    
-    // 통계 업데이트
-    userDoc._stats = this.calculateStats(userDoc.photos);
-    await userDoc.save();
+    await this.updatePhoto(userId, photo.photo_id, { is_locked: false });
   }
 
   /**
-   * 특정 사진 삭제 (잠금된 사진은 삭제 불가)
+   * 특정 사진 삭제 (photo_id 기반, 잠금된 사진은 삭제 불가)
+   * @param userId 사용자 ID
+   * @param photoId 사진 ID
    */
-  async deletePhoto(userId: number, s3Key: string): Promise<void> {
+  async deletePhoto(userId: number, photoId: string): Promise<void> {
     const userDoc = await this.passportPhotoModel.findOne({ user_id: userId });
 
     if (!userDoc || !userDoc.photos) {
       throw new BadRequestException('사진을 찾을 수 없습니다.');
     }
 
-    const photoIndex = userDoc.photos.findIndex(p => p.s3_key === s3Key);
+    const photoIndex = userDoc.photos.findIndex(p => p.photo_id === photoId);
 
     if (photoIndex === -1) {
       throw new BadRequestException('사진을 찾을 수 없습니다.');
@@ -271,6 +328,15 @@ export class PassportPhotosService {
 
     const photoToDelete = userDoc.photos[photoIndex];
 
+    // S3 삭제 먼저 (실제 파일이 삭제된 후 DB 업데이트)
+    try {
+      await this.s3Service.deleteObject(photoToDelete.s3_key);
+      console.log(`[PassportPhotosService] S3 삭제 완료: ${photoToDelete.s3_key}`);
+    } catch (err) {
+      console.error(`[PassportPhotosService] S3 삭제 실패: ${photoToDelete.s3_key}`, err);
+      throw new BadRequestException('S3 파일 삭제에 실패했습니다.');
+    }
+
     // Shift 최적화: 마지막 요소와 교체 후 pop (O(1))
     if (photoIndex < userDoc.photos.length - 1) {
       [userDoc.photos[photoIndex], userDoc.photos[userDoc.photos.length - 1]] = 
@@ -281,9 +347,6 @@ export class PassportPhotosService {
     // 통계 업데이트
     userDoc._stats = this.calculateStats(userDoc.photos);
     await userDoc.save();
-
-    // TODO: S3에서도 삭제 (S3Service 구현 후 추가)
-    // await this.s3Service.deleteObject(photoToDelete.s3_key);
   }
 
   /**
@@ -316,21 +379,23 @@ export class PassportPhotosService {
     const deletedCount = photosToDelete.length;
     const skippedCount = photosToKeep.length;
 
+    // S3 일괄 삭제 먼저 (실제 파일이 삭제된 후 DB 업데이트)
+    for (const photo of photosToDelete) {
+      try {
+        await this.s3Service.deleteObject(photo.s3_key);
+        console.log(`[PassportPhotosService] S3 삭제 완료: ${photo.s3_key}`);
+      } catch (err) {
+        console.error(`[PassportPhotosService] S3 삭제 실패: ${photo.s3_key}`, err);
+        // 일부 파일 삭제 실패해도 계속 진행 (나머지 파일은 정리됨)
+      }
+    }
+
     // 사진 배열 업데이트
     userDoc.photos = photosToKeep;
     
     // 통계 업데이트
     userDoc._stats = this.calculateStats(userDoc.photos);
     await userDoc.save();
-
-    // TODO: S3에서도 삭제 (S3Service 구현 후 추가)
-    // for (const photo of photosToDelete) {
-    //   try {
-    //     await this.s3Service.deleteObject(photo.s3_key);
-    //   } catch (err) {
-    //     console.error(`S3 삭제 실패: ${photo.s3_key}`, err);
-    //   }
-    // }
 
     return {
       deleted: deletedCount,

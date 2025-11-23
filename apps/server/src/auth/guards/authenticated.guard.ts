@@ -26,8 +26,8 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 @Injectable()
 export class AuthenticatedGuard extends AuthGuard('session') {
   constructor(
-    private reflector: Reflector,
-    private configService: ConfigService,
+    protected reflector: Reflector,
+    protected configService: ConfigService,
   ) {
     super();
   }
