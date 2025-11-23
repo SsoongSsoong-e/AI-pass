@@ -1,11 +1,13 @@
 
-import { Controller, Post, Body } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from "@nestjs/swagger";
 //import { FileInterceptor } from '@nestjs/platform-express';
 import { VerificationService } from "./photo-verification.service";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 
 @ApiTags('verification')
 @Controller("verification")
+@UseGuards(AuthenticatedGuard) // 인증 필요
 export class VerificationController {
   constructor(private readonly verificationService: VerificationService) {}
 

@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 @ApiTags('users')
 @Controller('users')
+@UseGuards(AuthenticatedGuard, AdminGuard) // Admin만 접근 가능
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

@@ -33,6 +33,7 @@ export class SessionSerializer extends PassportSerializer {
    * - 필요할 때 DB에서 최신 정보 조회
    */
   serializeUser(user: User, done: (err: Error, user: number) => void): void {
+    console.log('💾 [SessionSerializer] serializeUser 호출, user.id:', user.id, 'user.email:', user.email);
     done(null, user.id);
   }
 
@@ -50,17 +51,21 @@ export class SessionSerializer extends PassportSerializer {
     done: (err: Error, user: User | null) => void,
   ): Promise<void> {
     try {
+      console.log('🔍 [SessionSerializer] deserializeUser 호출, id:', id);
       const user = await this.userRepository.findOne({
         where: { id },
       });
 
       if (!user) {
+        console.error('❌ [SessionSerializer] User not found, id:', id);
         return done(new Error('User not found'), null);
       }
 
+      console.log('✅ [SessionSerializer] User 복원 성공:', user.email);
       // req.user에 User 객체 저장
       done(null, user);
     } catch (error) {
+      console.error('❌ [SessionSerializer] deserializeUser 에러:', error);
       done(error, null);
     }
   }
