@@ -3,16 +3,23 @@ import {
   Post,
   Get,
   Delete,
+  Patch,
   Param,
   Body,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
   Req,
   BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery, ApiCookieAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiQuery, ApiCookieAuth, ApiConsumes } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PassportPhotosService } from './passport-photos.service';
+import { S3Service } from '../s3/s3.service';
+import { PhotoEditService } from '../photo-edit/photo-edit.service';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
+import { UpdatePhotoDto } from './dto/update-photo.dto';
 import { Request } from 'express';
 import { User } from '../users/entities/user.entity';
 
@@ -36,37 +43,43 @@ const MAX_PHOTOS_PER_USER = 10;
 export class PassportPhotosController {
   constructor(
     private readonly passportPhotosService: PassportPhotosService,
+    private readonly s3Service: S3Service,
+    private readonly photoEditService: PhotoEditService,
   ) {}
 
   /**
-   * 사진 추가 (FIFO 방식)
+   * 사진 업로드 및 저장 (FIFO 방식)
    * POST /passport-photos
+   * 
+   * 파일 업로드 → 편집 → S3 저장 → MongoDB 저장
    */
   @Post()
+  @UseInterceptors(FileInterceptor('image'))
   @ApiOperation({
-    summary: '여권사진 추가',
-    description: `S3에 저장된 사진의 키를 입력하여 사용자의 여권사진 목록에 추가합니다.<br>최대 ${MAX_PHOTOS_PER_USER}개까지 저장 가능하며, 초과 시 FIFO 방식으로 가장 오래된 사진이 자동 삭제됩니다.`
+    summary: '여권사진 업로드 및 저장',
+    description: `이미지를 업로드하여 여권사진 규격에 맞게 편집한 후 S3에 저장하고 목록에 추가합니다.<br>최대 ${MAX_PHOTOS_PER_USER}개까지 저장 가능하며, 초과 시 FIFO 방식으로 가장 오래된 사진이 자동 삭제됩니다.`
   })
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        s3_key: {
+        image: {
           type: 'string',
-          example: 'photos/user123/photo_1699123456.jpg',
-          description: 'S3에 저장된 파일의 키(경로)'
+          format: 'binary',
+          description: '업로드할 이미지 파일'
         }
       },
-      required: ['s3_key']
+      required: ['image']
     }
   })
   @ApiResponse({
     status: 201,
-    description: '사진 추가 성공',
+    description: '사진 저장 성공',
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '사진이 추가되었습니다.' },
+        message: { type: 'string', example: '사진이 저장되었습니다.' },
         photo: {
           type: 'object',
           properties: {
@@ -96,51 +109,107 @@ export class PassportPhotosController {
             created_at: { type: 'string', format: 'date-time' },
             updated_at: { type: 'string', format: 'date-time' },
           }
-        }
+        },
+        s3Key: { type: 'string', example: 'passport-photos/2024/01/uuid.png' }
       }
     }
   })
   @ApiResponse({
     status: 400,
-    description: 's3_key가 필요합니다',
+    description: '이미지 파일이 필요합니다',
   })
   @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
   })
-  async addPhoto(
+  @ApiResponse({
+    status: 500,
+    description: '이미지 처리 또는 저장 실패',
+  })
+  async uploadPhoto(
+    @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
-    @Body('s3_key') s3Key: string,
   ) {
-    const user = req.user as User;
-    
-    if (!s3Key) {
-      throw new BadRequestException('s3_key가 필요합니다.');
+    if (!file) {
+      throw new BadRequestException('이미지 파일이 필요합니다.');
     }
 
-    const photo = await this.passportPhotosService.addPhotoFIFO(
-      user.id,
-      s3Key,
-    );
+    const user = req.user as User;
+    let s3Key: string | null = null;
 
-    return {
-      message: '사진이 추가되었습니다.',
-      photo,
-    };
+    try {
+      // 1. 이미지 편집
+      const editedPhoto = await this.photoEditService.getEditedPhoto(file);
+
+      // 2. UUID 기반 S3 키 생성
+      s3Key = await this.s3Service.generateUniqueS3Key();
+
+      // 3. S3 업로드 먼저 (파일이 실제로 존재할 때만 DB 저장)
+      await this.s3Service.uploadObject(editedPhoto, s3Key, 'image/png');
+
+      // 4. MongoDB에 메타데이터 저장
+      const photo = await this.passportPhotosService.addPhotoFIFO(
+        user.id,
+        s3Key,
+      );
+
+      return {
+        message: '사진이 저장되었습니다.',
+        photo,
+        s3Key: s3Key,
+      };
+    } catch (error) {
+      // DB 저장 실패 시 S3 파일 삭제 (고아 파일 방지)
+      if (s3Key) {
+        try {
+          await this.s3Service.deleteObject(s3Key);
+        } catch (deleteError) {
+          console.error(`[uploadPhoto] S3 파일 삭제 실패: ${s3Key}`, deleteError);
+        }
+      }
+      throw error;
+    }
   }
 
   /**
-   * 사용자별 사진 목록 조회
+   * 사용자별 사진 목록 조회 (RESTful)
    * GET /passport-photos
+   * 
+   * 쿼리 파라미터:
+   * - includeUrls: Presigned URL 포함 여부 (true일 때만 URL 생성)
+   * - include: 포함할 정보 ('count'일 때 통계 포함)
+   * - filter: 필터링 옵션 ('locked' | 'unlocked')
    */
   @Get()
   @ApiOperation({
     summary: '사용자의 여권사진 목록 조회',
-    description: '현재 로그인한 사용자가 저장한 모든 여권사진 목록과 통계 정보를 반환합니다.'
+    description: '현재 로그인한 사용자가 저장한 모든 여권사진 목록을 반환합니다.<br>쿼리 파라미터로 필터링 및 추가 정보를 포함할 수 있습니다.'
+  })
+  @ApiQuery({
+    name: 'includeUrls',
+    required: false,
+    type: String,
+    description: 'Presigned URL 포함 여부 (true일 때만 URL 생성)',
+    example: 'true'
+  })
+  @ApiQuery({
+    name: 'include',
+    required: false,
+    type: String,
+    description: '포함할 정보 (count: 통계 정보 포함)',
+    example: 'count'
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    type: String,
+    enum: ['locked', 'unlocked'],
+    description: '필터링 옵션 (locked: 잠금된 사진만, unlocked: 잠금 해제된 사진만)',
+    example: 'locked'
   })
   @ApiResponse({
     status: 200,
-    description: '사진 목록 및 통계 반환',
+    description: '사진 목록 반환',
     schema: {
       type: 'object',
       properties: {
@@ -149,11 +218,17 @@ export class PassportPhotosController {
           items: {
             type: 'object',
             properties: {
-              _id: { type: 'string' },
-              user_id: { type: 'number', example: 1 },
-              s3_key: { type: 'string', example: 'photos/user123/photo_1699123456.jpg' },
+              photo_id: { type: 'string' },
+              s3_key: { type: 'string', example: 'passport-photos/2024/01/uuid.png' },
               is_locked: { type: 'boolean', example: false },
               created_at: { type: 'string', format: 'date-time' },
+              presignedUrl: {
+                type: 'object',
+                properties: {
+                  url: { type: 'string', example: 'https://...' },
+                  expiresAt: { type: 'number', example: 1704067200000 }
+                }
+              }
             }
           }
         },
@@ -173,171 +248,98 @@ export class PassportPhotosController {
     status: 401,
     description: '인증이 필요합니다',
   })
-  async getPhotos(@Req() req: Request) {
+  async getPhotos(
+    @Req() req: Request,
+    @Query('includeUrls') includeUrls?: string,
+    @Query('include') include?: string,
+    @Query('filter') filter?: 'locked' | 'unlocked',
+  ) {
     const user = req.user as User;
-    const photos = await this.passportPhotosService.getPhotosByUserId(user.id);
-
-    const count = await this.passportPhotosService.getPhotoCount(user.id);
-
-    return {
-      photos,
-      count: {
-        total: count.total,
-        locked: count.locked,
-        unlocked: count.unlocked,
-        maxCount: MAX_PHOTOS_PER_USER,
-      },
-    };
-  }
-
-  /**
-   * 사진 개수 조회
-   * GET /passport-photos/count
-   */
-  @Get('count')
-  @ApiOperation({
-    summary: '사진 개수 조회',
-    description: '현재 로그인한 사용자의 여권사진 개수 통계를 반환합니다.'
-  })
-  @ApiResponse({
-    status: 200,
-    description: '사진 개수 통계 반환',
-    schema: {
-      type: 'object',
-      properties: {
-        total: { type: 'number', example: 5, description: '전체 사진 개수' },
-        locked: { type: 'number', example: 2, description: '잠금된 사진 개수' },
-        unlocked: { type: 'number', example: 3, description: '잠금 해제된 사진 개수' },
-        maxCount: { type: 'number', example: 10, description: '최대 저장 가능 개수' }
-      }
-    }
-  })
-  @ApiResponse({
-    status: 401,
-    description: '인증이 필요합니다',
-  })
-  async getPhotoCount(@Req() req: Request) {
-    const user = req.user as User;
-    const count = await this.passportPhotosService.getPhotoCount(user.id);
     
-    return {
-      ...count,
-      maxCount: MAX_PHOTOS_PER_USER,
-    };
-  }
+    // 필터링 옵션 적용
+    const photos = await this.passportPhotosService.getPhotosByUserId(user.id, {
+      filter,
+    });
 
-  /**
-   * 잠금된 사진 목록 조회
-   * GET /passport-photos/locked
-   */
-  @Get('locked')
-  @ApiOperation({
-    summary: '잠금된 사진 목록 조회',
-    description: '현재 로그인한 사용자의 잠금된 여권사진 목록을 반환합니다.<br>잠금된 사진은 FIFO 삭제 대상에서 제외됩니다.'
-  })
-  @ApiResponse({
-    status: 200,
-    description: '잠금된 사진 목록 반환',
-    schema: {
-      type: 'object',
-      properties: {
-        photos: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              photo_id: { type: 'string', example: 'photo_1699123456_abc123' },
-              s3_key: { type: 'string', example: 'photos/user123/photo_1699123456.jpg' },
-              is_locked: { type: 'boolean', example: true },
-              created_at: { type: 'string', format: 'date-time' },
-            }
-          }
+    // includeUrls=true인 경우 Presigned URL 생성
+    let photosWithUrls = photos;
+    if (includeUrls === 'true' && photos.length > 0) {
+      const keys = photos.map(photo => photo.s3_key);
+      const urlMappings = await this.s3Service.generatePresignedUrls(keys, 3600);
+      const urlMap = new Map(urlMappings.map(m => [m.key, m.url]));
+      
+      photosWithUrls = photos.map(photo => {
+        const url = urlMap.get(photo.s3_key);
+        if (url) {
+          return {
+            ...photo,
+            presignedUrl: {
+              url,
+              expiresAt: Date.now() + 3600 * 1000,
+            },
+          };
+        }
+        return photo;
+      });
+    }
+
+    // include=count인 경우 통계 정보 포함
+    if (include === 'count') {
+      const count = await this.passportPhotosService.getPhotoCount(user.id);
+      return {
+        photos: photosWithUrls,
+        count: {
+          total: count.total,
+          locked: count.locked,
+          unlocked: count.unlocked,
+          maxCount: MAX_PHOTOS_PER_USER,
         },
-        count: { type: 'number', example: 2, description: '잠금된 사진 개수' }
-      }
+      };
     }
-  })
-  @ApiResponse({
-    status: 401,
-    description: '인증이 필요합니다',
-  })
-  async getLockedPhotos(@Req() req: Request) {
-    const user = req.user as User;
-    const photos = await this.passportPhotosService.getLockedPhotos(user.id);
-    
+
     return {
-      photos,
-      count: photos.length,
+      photos: photosWithUrls,
     };
   }
 
   /**
-   * 잠금 해제된 사진 목록 조회
-   * GET /passport-photos/unlocked
+   * 특정 사진 조회
+   * GET /passport-photos/:photoId
    */
-  @Get('unlocked')
+  @Get(':photoId')
   @ApiOperation({
-    summary: '잠금 해제된 사진 목록 조회',
-    description: '현재 로그인한 사용자의 잠금 해제된 여권사진 목록을 반환합니다.<br>잠금 해제된 사진은 FIFO 삭제 대상입니다.'
-  })
-  @ApiResponse({
-    status: 200,
-    description: '잠금 해제된 사진 목록 반환',
-    schema: {
-      type: 'object',
-      properties: {
-        photos: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              _id: { type: 'string' },
-              user_id: { type: 'number', example: 1 },
-              s3_key: { type: 'string', example: 'photos/user123/photo_1699123456.jpg' },
-              is_locked: { type: 'boolean', example: false },
-              created_at: { type: 'string', format: 'date-time' },
-            }
-          }
-        },
-        count: { type: 'number', example: 3, description: '잠금 해제된 사진 개수' }
-      }
-    }
-  })
-  @ApiResponse({
-    status: 401,
-    description: '인증이 필요합니다',
-  })
-  async getUnlockedPhotos(@Req() req: Request) {
-    const user = req.user as User;
-    const photos = await this.passportPhotosService.getUnlockedPhotos(user.id);
-    
-    return {
-      photos,
-      count: photos.length,
-    };
-  }
-
-  /**
-   * 사진 잠금
-   * POST /passport-photos/:s3Key/lock
-   */
-  @Post(':s3Key/lock')
-  @ApiOperation({
-    summary: '사진 잠금',
-    description: '특정 사진을 잠금 처리합니다.<br>잠금된 사진은 FIFO 삭제 대상에서 제외되며, 일반 삭제도 불가능합니다.'
+    summary: '특정 사진 조회',
+    description: 'photo_id로 특정 사진의 정보를 조회합니다.'
   })
   @ApiParam({
-    name: 's3Key',
-    description: '잠금할 사진의 S3 키',
-    example: 'photos/user123/photo_1699123456.jpg'
+    name: 'photoId',
+    description: '조회할 사진의 ID',
+    example: 'photo_1704067200000_abc123xyz'
+  })
+  @ApiQuery({
+    name: 'includeUrls',
+    required: false,
+    type: String,
+    description: 'Presigned URL 포함 여부 (true일 때만 URL 생성)',
+    example: 'true'
   })
   @ApiResponse({
     status: 200,
-    description: '사진 잠금 성공',
+    description: '사진 정보 반환',
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '사진이 잠금되었습니다.' }
+        photo_id: { type: 'string' },
+        s3_key: { type: 'string' },
+        is_locked: { type: 'boolean' },
+        created_at: { type: 'string', format: 'date-time' },
+        presignedUrl: {
+          type: 'object',
+          properties: {
+            url: { type: 'string' },
+            expiresAt: { type: 'number' }
+          }
+        }
       }
     }
   })
@@ -349,39 +351,58 @@ export class PassportPhotosController {
     status: 401,
     description: '인증이 필요합니다',
   })
-  async lockPhoto(
+  async getPhoto(
     @Req() req: Request,
-    @Param('s3Key') s3Key: string,
+    @Param('photoId') photoId: string,
+    @Query('includeUrls') includeUrls?: string,
   ) {
     const user = req.user as User;
-    await this.passportPhotosService.lockPhoto(user.id, s3Key);
-    
-    return {
-      message: '사진이 잠금되었습니다.',
-    };
+    const photo = await this.passportPhotosService.getPhotoById(user.id, photoId);
+
+    if (!photo) {
+      throw new BadRequestException('사진을 찾을 수 없습니다.');
+    }
+
+    // includeUrls=true인 경우 Presigned URL 생성
+    if (includeUrls === 'true') {
+      const url = await this.s3Service.getPresignedUrl(photo.s3_key, 3600);
+      return {
+        ...photo,
+        presignedUrl: {
+          url,
+          expiresAt: Date.now() + 3600 * 1000,
+        },
+      };
+    }
+
+    return photo;
   }
 
   /**
-   * 사진 잠금 해제
-   * POST /passport-photos/:s3Key/unlock
+   * 사진 수정 (잠금/잠금 해제 통합)
+   * PATCH /passport-photos/:photoId
    */
-  @Post(':s3Key/unlock')
+  @Patch(':photoId')
   @ApiOperation({
-    summary: '사진 잠금 해제',
-    description: '잠금된 사진의 잠금을 해제합니다.<br>잠금 해제된 사진은 다시 FIFO 삭제 대상이 됩니다.'
+    summary: '사진 수정',
+    description: '특정 사진의 정보를 수정합니다. (현재는 잠금 상태만 수정 가능)<br>잠금된 사진은 FIFO 삭제 대상에서 제외되며, 일반 삭제도 불가능합니다.'
   })
   @ApiParam({
-    name: 's3Key',
-    description: '잠금 해제할 사진의 S3 키',
-    example: 'photos/user123/photo_1699123456.jpg'
+    name: 'photoId',
+    description: '수정할 사진의 ID',
+    example: 'photo_1704067200000_abc123xyz'
+  })
+  @ApiBody({
+    type: UpdatePhotoDto,
+    description: '수정할 필드 (is_locked)'
   })
   @ApiResponse({
     status: 200,
-    description: '사진 잠금 해제 성공',
+    description: '사진 수정 성공',
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '사진 잠금이 해제되었습니다.' }
+        message: { type: 'string', example: '사진이 수정되었습니다.' }
       }
     }
   })
@@ -390,34 +411,39 @@ export class PassportPhotosController {
     description: '사진을 찾을 수 없음',
   })
   @ApiResponse({
+    status: 400,
+    description: '잘못된 요청 (이미 같은 상태)',
+  })
+  @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
   })
-  async unlockPhoto(
+  async updatePhoto(
     @Req() req: Request,
-    @Param('s3Key') s3Key: string,
+    @Param('photoId') photoId: string,
+    @Body() dto: UpdatePhotoDto,
   ) {
     const user = req.user as User;
-    await this.passportPhotosService.unlockPhoto(user.id, s3Key);
+    await this.passportPhotosService.updatePhoto(user.id, photoId, dto);
     
     return {
-      message: '사진 잠금이 해제되었습니다.',
+      message: '사진이 수정되었습니다.',
     };
   }
 
   /**
-   * 특정 사진 삭제 (잠금된 사진은 삭제 불가)
-   * DELETE /passport-photos/:s3Key
+   * 특정 사진 삭제 (photo_id 기반, 잠금된 사진은 삭제 불가)
+   * DELETE /passport-photos/:photoId
    */
-  @Delete(':s3Key')
+  @Delete(':photoId')
   @ApiOperation({
     summary: '특정 사진 삭제',
-    description: '지정한 S3 키의 사진을 삭제합니다.<br>잠금된 사진은 삭제할 수 없습니다.'
+    description: '지정한 photo_id의 사진을 삭제합니다.<br>잠금된 사진은 삭제할 수 없습니다.'
   })
   @ApiParam({
-    name: 's3Key',
-    description: '삭제할 사진의 S3 키',
-    example: 'photos/user123/photo_1699123456.jpg'
+    name: 'photoId',
+    description: '삭제할 사진의 ID',
+    example: 'photo_1704067200000_abc123xyz'
   })
   @ApiResponse({
     status: 200,
@@ -443,10 +469,10 @@ export class PassportPhotosController {
   })
   async deletePhoto(
     @Req() req: Request,
-    @Param('s3Key') s3Key: string,
+    @Param('photoId') photoId: string,
   ) {
     const user = req.user as User;
-    await this.passportPhotosService.deletePhoto(user.id, s3Key);
+    await this.passportPhotosService.deletePhoto(user.id, photoId);
     
     return {
       message: '사진이 삭제되었습니다.',

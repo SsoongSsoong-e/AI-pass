@@ -29,9 +29,8 @@ export interface EnvironmentVariables {
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_CALLBACK_URL: string;
 
-  // 시드 데이터 (개발용)
-  SEED_ADMIN_EMAIL?: string;
-  SEED_ADMIN_USERNAME?: string;
+  // Admin 이메일 목록 (쉼표로 구분된 문자열)
+  ADMIN_EMAILS?: string[];
 
   // 서버 포트 (선택사항)
   SERVER_PORT?: number;

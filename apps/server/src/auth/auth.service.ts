@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { User } from '../users/entities/user.entity';
 import { OAuthAccount } from '../users/entities/oauth-account.entity';
 import { UserRole } from '../users/user-role.enum';
+import { EnvironmentVariables } from '../config/env.schema';
 
 /**
  * 사용자 정보 인터페이스 (Google OAuth에서 받은 정보)
@@ -38,7 +40,18 @@ export class AuthService {
     @InjectRepository(OAuthAccount)
     private oauthAccountRepository: Repository<OAuthAccount>,
     private dataSource: DataSource,
+    private configService: ConfigService,
   ) {}
+
+  /**
+   * 이메일이 Admin 이메일 목록에 있는지 확인
+   */
+  private isAdminEmail(email: string | null): boolean {
+    if (!email) return false;
+    const appConfig = this.configService.get('app') as any;
+    const adminEmails = (appConfig?.ADMIN_EMAILS as string[]) || [];
+    return adminEmails.includes(email.toLowerCase());
+  }
 
   /**
    * OAuth 사용자 찾기 또는 생성 (완전 분리 방식)
@@ -67,8 +80,15 @@ export class AuthService {
       });
 
       // 기존 OAuth 계정이 있으면 기존 User 반환
+      // 단, 이메일이 Admin 목록에 있고 현재 역할이 USER인 경우 ADMIN으로 업데이트
       if (existingOAuthAccount) {
-        return existingOAuthAccount.user;
+        const user = existingOAuthAccount.user;
+        // 이메일이 Admin 목록에 있고 현재 역할이 USER인 경우 ADMIN으로 업데이트
+        if (this.isAdminEmail(user.email) && user.role !== UserRole.ADMIN) {
+          user.role = UserRole.ADMIN;
+          await manager.save(User, user);
+        }
+        return user;
       }
 
       // 2단계: 신규 User 생성
@@ -87,11 +107,14 @@ export class AuthService {
 
       const uniqueEmail = generateUniqueEmail();
 
+      // Admin 이메일 목록에 있으면 ADMIN 역할로 설정, 아니면 USER
+      const userRole = this.isAdminEmail(uniqueEmail) ? UserRole.ADMIN : UserRole.USER;
+
       const newUser = manager.create(User, {
         email: uniqueEmail,
         username: userInfo.username,
         profile_picture: userInfo.profile_picture,
-        role: UserRole.USER,
+        role: userRole,
       });
 
       const savedUser = await manager.save(User, newUser);

@@ -11,6 +11,7 @@ import { VerificationModule } from './photo-verification/photo-verification.modu
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PassportPhotosModule } from './passport-photos/passport-photos.module';
+import { S3Module } from './s3/s3.module';
 import { resolveEnvPaths } from './config/env.helpers';
 import appConfig from './config/env.config';
 import { validateEnvVariables } from './config/env.schema';
@@ -59,6 +60,7 @@ import { validateEnvVariables } from './config/env.schema';
     UsersModule,
     AuthModule,
     PassportPhotosModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [AppService],

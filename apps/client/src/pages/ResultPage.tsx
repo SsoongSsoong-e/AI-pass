@@ -28,8 +28,8 @@ const ResultPage = () => {
       const formData = new FormData();
       formData.append("image", blob, "passport_photo.png");
 
-      // 서버에 저장
-      const saveResponse = await axiosInstance.post("/photo-edit/save", formData, {
+      // 서버에 저장 (POST /passport-photos로 통합됨)
+      const saveResponse = await axiosInstance.post("/passport-photos", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

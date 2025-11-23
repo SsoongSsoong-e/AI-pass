@@ -31,7 +31,7 @@ export class OAuthAccount {
 
   /**
    * User와의 관계 (One-to-One)
-   * 
+   *
    * 한 OAuthAccount는 정확히 하나의 User에 연결됨
    * OAuth 계정 하나당 항상 새로운 User가 생성되므로 One-to-One 관계
    */
