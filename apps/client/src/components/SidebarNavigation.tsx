@@ -24,7 +24,7 @@ export default function SidebarNavigation({
   };
 
   const handleGallery = () => {
-    navigate('/result'); // 갤러리 페이지로 (기존 /result 경로 사용)
+    navigate('/gallery'); // 갤러리 페이지로 (기존 /result 경로 사용)
     onClose();
   };
 

@@ -79,7 +79,7 @@ export default function NewLandingPage() {
   };
 
   const handleGallery = () => {
-    navigate('/result');
+    navigate('/gallery');
   };
 
   const handleLogout = async () => {
