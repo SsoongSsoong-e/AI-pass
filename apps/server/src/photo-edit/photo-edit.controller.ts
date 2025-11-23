@@ -1,10 +1,14 @@
 import {
   Controller,
   Post,
+  Get,
   UseInterceptors,
   UploadedFile,
   Res,
   UseGuards,
+  HttpCode,
+  HttpStatus,
+  MethodNotAllowedException,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -19,6 +23,20 @@ export class PhotoEditController {
   constructor(
     private readonly photoEditService: PhotoEditService,
   ) {}
+
+  @Get()
+  @HttpCode(HttpStatus.METHOD_NOT_ALLOWED)
+  @ApiOperation({
+    summary: '이미지 편집 (GET 요청 불가)',
+    description: '이미지 편집은 POST 메서드만 지원합니다. POST /photo-edit을 사용해주세요.'
+  })
+  @ApiResponse({
+    status: 405,
+    description: 'Method Not Allowed - POST 메서드를 사용해야 합니다.'
+  })
+  getPhotoEdit() {
+    throw new MethodNotAllowedException('이미지 편집은 POST 메서드만 지원합니다. POST /photo-edit을 사용해주세요.');
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor("image"))

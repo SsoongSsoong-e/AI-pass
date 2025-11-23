@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('users')
 @Controller('users')
@@ -13,6 +14,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @Public() // 회원가입은 인증 없이 접근 가능
   @ApiOperation({
     summary: '새 사용자 생성',
     description: '이메일과 사용자명을 입력하여 새로운 사용자를 생성합니다.<br>이메일은 고유해야 합니다.'

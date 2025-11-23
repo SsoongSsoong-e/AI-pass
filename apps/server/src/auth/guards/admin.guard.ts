@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticatedGuard } from './authenticated.guard';
 import { UserRole } from '../../users/user-role.enum';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
  * AdminGuard
@@ -33,6 +34,16 @@ export class AdminGuard extends AuthenticatedGuard {
    * @returns Admin 권한 여부
    */
   canActivate(context: ExecutionContext): boolean {
+    // @Public() 데코레이터 확인
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    
+    if (isPublic) {
+      return true; // Public이면 Admin 검증도 우회
+    }
+
     // 먼저 인증 검증 (AuthenticatedGuard)
     const isAuthenticated = super.canActivate(context);
 
