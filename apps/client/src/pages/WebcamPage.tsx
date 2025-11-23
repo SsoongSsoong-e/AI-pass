@@ -1,17 +1,22 @@
 import { useEffect, useState, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import GuideLine from "../assets/guideLine.svg";
 import CheckSymbol from "../assets/checkSymbol.svg?react";
 import { io } from "socket.io-client";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@repo/ui/button";
 import { Modal } from "@repo/ui/modal";
 import { PhotoContext } from "../providers/RootProvider";
 import SidebarNavigation from '../components/SidebarNavigation';
 
-const TEMP_PROFILE = {
-  imageUrl: '',
-  userName: 'User Name'
-};
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+
+interface UserProfile {
+  id: number;
+  email: string;
+  username: string;
+  profile_picture?: string;
+  role: string;
+}
 
 const WebcamPage = () => {
   const navigate = useNavigate();
@@ -23,10 +28,62 @@ const WebcamPage = () => {
   const { verificationResult, setVerificationResult } = useContext(PhotoContext);
   const [countdown, setCountdown] = useState<number>(3);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
 
-  const handleLogout = () => {
-    // 로그아웃 로직
-    console.log('로그아웃');
+  // 사용자 프로필 가져오기
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/session/user`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUserProfile(userData);
+      } else {
+        console.error('사용자 정보를 가져올 수 없습니다');
+        navigate('/', { replace: true });
+      }
+    } catch (error) {
+      console.error('사용자 정보 조회 오류:', error);
+      navigate('/', { replace: true });
+    } finally {
+      setIsProfileLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/session`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        console.log('로그아웃 성공');
+        setUserProfile(null);
+        await new Promise(resolve => setTimeout(resolve, 200));
+        navigate('/', { replace: true });
+      } else {
+        console.error('로그아웃 실패');
+        alert('로그아웃에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('로그아웃 오류:', error);
+      alert('로그아웃 중 오류가 발생했습니다.');
+    }
   };
 
   const captureImage = () => {
@@ -179,14 +236,31 @@ const WebcamPage = () => {
     "빛이 충분해요",
   ];
 
+  // 프로필 로딩 중
+  if (isProfileLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 로그인 안됨
+  if (!userProfile) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 flex flex-col items-center justify-center px-4 py-8 relative">
+    <div className="fixed inset-0 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 flex flex-col items-center justify-center px-4 py-8 overflow-y-auto">
       {/* 사이드바 네비게이션 */}
       <SidebarNavigation 
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
-        userName={TEMP_PROFILE.userName}
-        userImage={TEMP_PROFILE.imageUrl}
+        userName={userProfile.username}
+        userImage={userProfile.profile_picture || ''}
         onLogout={handleLogout}
       />
 
@@ -196,15 +270,15 @@ const WebcamPage = () => {
           onClick={() => setIsSidebarOpen(true)}
           className="w-14 h-14 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center overflow-hidden shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
         >
-          {TEMP_PROFILE.imageUrl ? (
+          {userProfile.profile_picture ? (
             <img 
-              src={TEMP_PROFILE.imageUrl} 
-              alt={TEMP_PROFILE.userName}
+              src={userProfile.profile_picture} 
+              alt={userProfile.username}
               className="w-full h-full object-cover"
             />
           ) : (
             <span className="text-xl font-bold text-gray-700">
-              {TEMP_PROFILE.userName.charAt(0).toUpperCase()}
+              {userProfile.username.charAt(0).toUpperCase()}
             </span>
           )}
         </button>

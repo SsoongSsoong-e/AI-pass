@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import loadingImage from '../assets/loading.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
@@ -47,9 +48,15 @@ export default function AuthCallback() {
   }, [navigate, searchParams]);
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-white">
       <div className="text-center">
-        <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <div className="mb-6">
+          <img 
+            src={loadingImage} 
+            alt="로딩 중"
+            className="w-64 h-64 mx-auto object-contain animate-pulse"
+          />
+        </div>
         <h2 className="text-xl font-semibold text-gray-800 mb-2">로그인 중...</h2>
         <p className="text-gray-600">잠시만 기다려주세요</p>
       </div>

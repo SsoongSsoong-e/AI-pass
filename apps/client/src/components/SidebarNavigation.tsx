@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface SidebarNavigationProps {
@@ -18,7 +19,7 @@ export default function SidebarNavigation({
   const navigate = useNavigate();
 
   const handleHome = () => {
-    navigate('/guide'); // 로그인된 사용자는 가이드 페이지로
+    navigate('/'); // 랜딩 페이지로
     onClose();
   };
 

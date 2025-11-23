@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarNavigation from '../components/SidebarNavigation';
+import guidePhoneImg from '../assets/guide-phone.png';
+import guideFaceImg from '../assets/guide-face.png';
+import guideReadyImg from '../assets/guide-ready.png';
+import guideSecondImg from '../assets/guide-second.png';
+import React from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
@@ -28,7 +33,7 @@ export default function NewGuidePage() {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/session/user`, {
         method: 'GET',
-        credentials: 'include', // 쿠키 포함
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -38,7 +43,6 @@ export default function NewGuidePage() {
         const userData = await response.json();
         setUserProfile(userData);
       } else {
-        // 로그인되어 있지 않으면 랜딩 페이지로 리다이렉트
         console.error('사용자 정보를 가져올 수 없습니다');
         navigate('/', { replace: true });
       }
@@ -51,6 +55,7 @@ export default function NewGuidePage() {
   };
 
   const handleLogout = async () => {
+    console.log('🚪 [가이드페이지] 로그아웃 시작');
     try {
       const response = await fetch(`${API_BASE_URL}/auth/session`, {
         method: 'DELETE',
@@ -60,18 +65,20 @@ export default function NewGuidePage() {
         },
       });
 
+      console.log('📡 [가이드페이지] 로그아웃 응답 상태:', response.status);
+
       if (response.ok) {
-        console.log('로그아웃 성공');
-        // 상태를 먼저 초기화
+        console.log('✅ [가이드페이지] 로그아웃 성공');
         setUserProfile(null);
-        // 랜딩 페이지로 리다이렉트
+        await new Promise(resolve => setTimeout(resolve, 200));
+        console.log('🔄 [가이드페이지] 랜딩 페이지로 이동');
         navigate('/', { replace: true });
       } else {
-        console.error('로그아웃 실패');
+        console.error('❌ [가이드페이지] 로그아웃 실패');
         alert('로그아웃에 실패했습니다.');
       }
     } catch (error) {
-      console.error('로그아웃 오류:', error);
+      console.error('⚠️ [가이드페이지] 로그아웃 오류:', error);
       alert('로그아웃 중 오류가 발생했습니다.');
     }
   };
@@ -79,19 +86,23 @@ export default function NewGuidePage() {
   const guides = [
     {
       title: '📱 핸드폰 고정',
-      content: '핸드폰을 얼굴 가이드라인에 맞게 고정해주세요'
+      content: '핸드폰을 얼굴 가이드라인에 맞게 고정해주세요',
+      image: guidePhoneImg
     },
     {
       title: '👤 얼굴 윤곽 확인',
-      content: '얼굴 윤곽을 가리지 않도록 확인해주세요\n\n• 머리카락, 스카프, 목도리 등'
+      content: '얼굴 윤곽을 가리지 않도록 확인해주세요\n\n• 머리카락, 스카프, 목도리 등',
+      image: guideFaceImg
     },
     {
       title: '✨ 촬영 준비',
-      content: '아래 사항을 지켜야 촬영 버튼이 활성화돼요\n\n• 안경, 악세사리, 머리띠, 모자, 이어폰 등 미착용\n• 정면, 무표정, 적절한 조명'
+      content: '아래 사항을 지켜야 촬영 버튼이 활성화돼요\n\n• 안경, 악세사리, 머리띠, 모자, 이어폰 등 미착용\n• 정면, 무표정, 적절한 조명',
+      image: guideReadyImg
     },
     {
       title: '⏱️ 자동 촬영',
-      content: '촬영 버튼이 활성화된 후 3초 뒤,\n자동으로 촬영이 시작돼요'
+      content: '촬영 버튼이 활성화된 후 3초 뒤,\n자동으로 촬영이 시작돼요',
+      image: guideSecondImg
     }
   ];
 
@@ -118,7 +129,7 @@ export default function NewGuidePage() {
   // 로딩 중일 때
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
+      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">로딩 중...</p>
@@ -129,13 +140,13 @@ export default function NewGuidePage() {
 
   // 사용자 정보가 없을 때 (로그인 안 됨)
   if (!userProfile) {
-    return null; // navigate로 리다이렉트되므로 아무것도 렌더링하지 않음
+    return null;
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 relative overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 overflow-y-auto flex flex-col">
       {/* 배경 패턴 */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 pointer-events-none">
         <div className="absolute top-20 left-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
@@ -170,7 +181,7 @@ export default function NewGuidePage() {
       </div>
 
       {/* 메인 컨텐츠 */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-20">
         
         {/* 슬라이드 영역 */}
         <div className="w-full max-w-2xl flex items-center justify-center gap-8 mb-8">
@@ -194,7 +205,17 @@ export default function NewGuidePage() {
             {currentSlide < guides.length ? (
               // 가이드 카드
               <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-gray-200 min-h-[400px] flex flex-col items-center justify-center">
-                <div className="text-center mb-6">
+                {/* 이미지 */}
+                <div className="mb-6">
+                  <img 
+                    src={guides[currentSlide].image} 
+                    alt={guides[currentSlide].title}
+                    className="w-48 h-48 object-contain"
+                  />
+                </div>
+                
+                {/* 텍스트 */}
+                <div className="text-center">
                   <h2 className="text-3xl font-black text-gray-800 mb-4">
                     {guides[currentSlide].title}
                   </h2>
