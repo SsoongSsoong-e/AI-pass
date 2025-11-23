@@ -1,5 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import landingImage from '../assets/landing.png';
+import React from 'react';
 
 // 환경변수 또는 설정에서 가져오기
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
@@ -7,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 export default function NewLandingPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null = 로딩중
   const [isLoading, setIsLoading] = useState(true);
 
   // 페이지 로드 시 세션 확인
@@ -19,26 +21,23 @@ export default function NewLandingPage() {
   useEffect(() => {
     if (location.pathname === '/') {
       console.log('📍 [랜딩페이지] 페이지 도착, 세션 재확인');
-      // 즉시 로딩 상태로 변경
-      setIsLoading(true);
-      setIsLoggedIn(false); // 일단 false로 초기화
+      setIsLoading(true); // 로딩 상태로 변경
       
-      // 약간의 지연을 두고 세션 확인 (로그아웃 API 완료 대기)
+      // 약간의 지연을 두고 세션 확인
       const timer = setTimeout(() => {
         checkSession();
-      }, 300); // 100ms → 300ms로 증가
+      }, 100);
       
       return () => clearTimeout(timer);
     }
-  }, [location]);
+  }, [location.pathname]); // location 전체가 아닌 pathname만 감지
 
   const checkSession = async () => {
     console.log('🔍 [랜딩페이지] checkSession 시작');
-    setIsLoading(true); // 로딩 상태 재설정
     try {
       const response = await fetch(`${API_BASE_URL}/auth/session/user`, {
         method: 'GET',
-        credentials: 'include', // 쿠키 포함
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -48,10 +47,21 @@ export default function NewLandingPage() {
 
       if (response.ok) {
         const userData = await response.json();
-        console.log('✅ [랜딩페이지] 로그인된 사용자:', userData);
-        setIsLoggedIn(true);
+        console.log('📦 [랜딩페이지] 응답 데이터:', userData);
+        
+        // 더미 사용자 체크
+        const isDummyUser = userData.email === 'dev@example.com' && 
+                           userData.username === 'dev_user';
+        
+        if (isDummyUser) {
+          console.log('⚠️ [랜딩페이지] 더미 사용자 감지');
+          setIsLoggedIn(false);
+        } else {
+          console.log('✅ [랜딩페이지] 로그인된 사용자');
+          setIsLoggedIn(true);
+        }
       } else {
-        console.log('❌ [랜딩페이지] 로그인되지 않음');
+        console.log('❌ [랜딩페이지] 로그인 안됨');
         setIsLoggedIn(false);
       }
     } catch (error) {
@@ -59,7 +69,7 @@ export default function NewLandingPage() {
       setIsLoggedIn(false);
     } finally {
       setIsLoading(false);
-      console.log('✔️ [랜딩페이지] isLoggedIn 상태:', isLoggedIn);
+      console.log('✔️ [랜딩페이지] 최종 상태 - isLoggedIn:', isLoggedIn, 'isLoading:', false);
     }
   };
 
@@ -85,6 +95,8 @@ export default function NewLandingPage() {
       if (response.ok) {
         setIsLoggedIn(false);
         console.log('로그아웃 성공');
+        // 현재 페이지가 이미 랜딩 페이지라면 리로드만
+        window.location.reload();
       }
     } catch (error) {
       console.error('로그아웃 오류:', error);
@@ -93,7 +105,7 @@ export default function NewLandingPage() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
+      <div className="fixed inset-0 flex items-center justify-center bg-white">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">로딩 중...</p>
@@ -103,26 +115,20 @@ export default function NewLandingPage() {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 relative overflow-hidden flex flex-col items-center justify-center">
-      {/* 배경 패턴 */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-      </div>
-
+    <div className="fixed inset-0 bg-white overflow-hidden flex flex-col items-center justify-center">
       {/* 우측 상단 내비게이션 */}
       {isLoggedIn && (
         <div className="absolute top-6 right-8 z-20 flex gap-3">
           <button
             onClick={handleGallery}
-            className="px-4 py-2 bg-white/80 backdrop-blur-sm hover:bg-white rounded-full border border-indigo-200 shadow-md flex items-center gap-2 transition-all hover:shadow-lg"
+            className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-full border border-indigo-200 shadow-sm flex items-center gap-2 transition-all hover:shadow-md"
           >
             <span className="text-base">🖼️</span>
             <span className="text-sm font-semibold text-indigo-700">내 갤러리</span>
           </button>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 bg-white/80 backdrop-blur-sm hover:bg-white rounded-full border border-red-200 shadow-md flex items-center gap-2 transition-all hover:shadow-lg"
+            className="px-4 py-2 bg-red-50 hover:bg-red-100 rounded-full border border-red-200 shadow-sm flex items-center gap-2 transition-all hover:shadow-md"
           >
             <span className="text-sm font-semibold text-red-600">로그아웃</span>
           </button>
@@ -131,31 +137,16 @@ export default function NewLandingPage() {
 
       {/* 메인 컨텐츠 */}
       <div className="relative z-10 flex flex-col items-center px-6 max-w-xl w-full">
-        {/* 여권 아이콘 */}
-        <div className="mb-8 relative">
-          <div className="w-48 h-48 flex items-center justify-center">
-            {/* 여권 배경 */}
-            <div className="absolute w-40 h-52 bg-indigo-600 rounded-2xl shadow-2xl transform rotate-6 opacity-90"></div>
-            {/* 티켓 */}
-            <div className="absolute w-36 h-48 bg-amber-50 rounded-xl shadow-xl transform -rotate-3 border-2 border-dashed border-amber-300">
-              <div className="absolute top-3 left-3 text-2xl">✈️</div>
-              <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-1">
-                <div className="w-16 h-1 bg-gray-300 rounded"></div>
-                <div className="w-12 h-1 bg-gray-300 rounded"></div>
-                <div className="w-10 h-1 bg-gray-300 rounded"></div>
-              </div>
-            </div>
-            {/* 여권 상세 */}
-            <div className="relative w-40 h-52 bg-indigo-700 rounded-2xl shadow-2xl flex flex-col items-center justify-center border-4 border-indigo-800">
-              <div className="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center mb-3 border-4 border-indigo-800">
-                <svg className="w-12 h-12 text-indigo-800" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-                </svg>
-              </div>
-              <div className="w-20 h-1 bg-white/50 rounded mb-1"></div>
-              <div className="w-16 h-1 bg-white/30 rounded"></div>
-            </div>
-          </div>
+      <h1 className="text-4xl font-black text-gray-800 mb-2">
+            아 맞다 여권사진!
+          </h1>
+        {/* 곰돌이 이미지 */}
+        <div className="mb-8">
+          <img 
+            src={landingImage}
+            alt="여권 신청 곰돌이"
+            className="w-300 h-auto"
+          />
         </div>
 
         {/* 타이틀 */}
@@ -206,7 +197,7 @@ export default function NewLandingPage() {
       </div>
 
       {/* 도움말 버튼 */}
-      <button className="fixed bottom-6 right-6 w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center text-lg font-bold z-50">
+      <button className="fixed bottom-6 right-6 w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center text-lg font-bold z-50">
         ?
       </button>
     </div>

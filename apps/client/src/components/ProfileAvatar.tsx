@@ -1,3 +1,5 @@
+import React from "react";
+
 interface ProfileAvatarProps {
   imageUrl?: string;
   userName?: string;

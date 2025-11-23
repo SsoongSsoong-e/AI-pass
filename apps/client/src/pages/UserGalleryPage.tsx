@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import SidebarNavigation from '../components/SidebarNavigation';
 
@@ -19,17 +20,12 @@ export default function NewGalleryPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [hoveredPhotoId, setHoveredPhotoId] = useState<string | null>(null);
   
-  // 임시 데이터 (실제로는 API에서 가져올 데이터)
   const [photos, setPhotos] = useState<Photo[]>([
-    { id: '1', url: 'https://via.placeholder.com/200', isLocked: false, createdAt: new Date() },
-    { id: '2', url: 'https://via.placeholder.com/200', isLocked: true, createdAt: new Date() },
-    { id: '3', url: 'https://via.placeholder.com/200', isLocked: false, createdAt: new Date() },
-    { id: '4', url: 'https://via.placeholder.com/200', isLocked: false, createdAt: new Date() },
-    { id: '5', url: 'https://via.placeholder.com/200', isLocked: false, createdAt: new Date() },
+   
   ]);
 
   const handleLogout = () => {
-    console.log('로그아웃');
+    
   };
 
   const toggleLock = (photoId: string) => {
