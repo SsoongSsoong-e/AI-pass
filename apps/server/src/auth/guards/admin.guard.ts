@@ -32,10 +32,10 @@ export class AdminGuard extends AuthenticatedGuard {
    * @param context ExecutionContext
    * @returns Admin 권한 여부
    */
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     // 먼저 인증 검증 (AuthenticatedGuard)
     const isAuthenticated = super.canActivate(context);
-    
+
     if (!isAuthenticated) {
       return false;
     }

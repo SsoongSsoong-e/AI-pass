@@ -12,6 +12,8 @@ import * as session from 'express-session';
 import * as connectPgSimple from 'connect-pg-simple';
 import * as passport from 'passport';
 import { ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { SessionSerializer } from './auth/serializers/passport.serializer';
 
 async function bootstrap() {
   // const httpsOptions = {
@@ -77,18 +79,50 @@ async function bootstrap() {
   // Passport 미들웨어 설정
   app.use(passport.initialize());
   
+  // AUTH_ENABLED가 true일 때 SessionSerializer를 Passport에 등록
+  if (authEnabled) {
+    try {
+      // AuthModule에서 SessionSerializer 가져오기
+      const authModuleRef = app.select(AuthModule);
+      const sessionSerializer = authModuleRef.get(SessionSerializer, { strict: false });
+      
+      // Passport에 serializer 등록
+      passport.serializeUser(sessionSerializer.serializeUser.bind(sessionSerializer));
+      passport.deserializeUser(sessionSerializer.deserializeUser.bind(sessionSerializer));
+      console.log('✅ [main.ts] SessionSerializer가 Passport에 등록되었습니다.');
+    } catch (error) {
+      console.error('❌ [main.ts] SessionSerializer 등록 실패:', error);
+      // SessionSerializer 등록 실패해도 계속 진행 (에러 발생 시 로그만 출력)
+    }
+  }
+  
   // AUTH_ENABLED가 false면 passport.session() 미들웨어를 우회
   // 인증이 비활성화된 경우 세션 인증 체크를 건너뜀
   if (authEnabled) {
     // 인증이 활성화된 경우에만 passport.session() 적용
     app.use((req, res, next) => {
       const isPhotoEditPath = req.path?.startsWith('/photo-edit');
-      if (isPhotoEditPath) {
-        // photo-edit 경로는 passport.session() 미들웨어를 우회
+      // OAuth 경로는 세션 인증이 필요 없으므로 미들웨어를 아예 실행하지 않음
+      const isAuthPath = req.path?.startsWith('/auth/google') || req.path === '/auth/google/callback';
+      
+      if (isPhotoEditPath || isAuthPath) {
+        // photo-edit 경로와 OAuth 경로는 passport.session() 미들웨어를 우회
         return next();
       }
       // 다른 경로는 passport.session() 적용
-      passport.session()(req, res, next);
+      console.log('🔄 [main.ts] passport.session() 실행, path:', req.path, 'sessionID:', req.sessionID);
+      passport.session()(req, res, (err) => {
+        if (err) {
+          // 세션 복원 실패는 에러로 처리하지 않고 계속 진행
+          // (세션이 없는 경우는 정상적인 상황일 수 있음)
+          console.warn('⚠️ [main.ts] passport.session() 경고:', err.message);
+          // 에러를 next()로 전달하지 않고 계속 진행
+          // AuthenticatedGuard에서 req.user를 확인할 것임
+          return next();
+        }
+        console.log('✅ [main.ts] passport.session() 완료, req.user:', req.user ? req.user.email : 'null');
+        next();
+      });
     });
   } else {
     // 인증이 비활성화된 경우 더미 사용자 설정 (개발용)

@@ -24,6 +24,12 @@ export class SessionStrategy extends PassportStrategy(Strategy, 'session') {
    * @param done Passport 콜백 함수
    */
   async validate(req: Request, done: (error: any, user?: any) => void): Promise<void> {
+    // OAuth 경로는 인증 없이 통과 (로그인 전이므로)
+    const isAuthPath = req.path?.startsWith('/auth/google') || req.path === '/auth/google/callback';
+    if (isAuthPath) {
+      return done(null, req.user as User | undefined || null);
+    }
+
     // 임시: photo-edit 경로는 인증 없이 통과 (나중에 로그인 기능 추가 시 수정)
     const isPhotoEditPath = req.path?.startsWith('/photo-edit');
     if (isPhotoEditPath) {

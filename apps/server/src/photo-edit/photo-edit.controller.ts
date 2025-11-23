@@ -4,25 +4,23 @@ import {
   UseInterceptors,
   UploadedFile,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { PhotoEditService } from "./photo-edit.service";
 import { Response } from "express";
-// 임시: 인증 관련 import 제거 (나중에 로그인 기능 추가 시 다시 추가)
-// import { Public } from "../auth/decorators/public.decorator";
-// import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 
 @ApiTags('photo-edit')
 @Controller("photo-edit")
-// 임시: 가드 없이 사용 (나중에 로그인 기능 추가 시 @UseGuards(AuthenticatedGuard) 추가)
+@UseGuards(AuthenticatedGuard) // 인증 필요
 export class PhotoEditController {
   constructor(
     private readonly photoEditService: PhotoEditService,
   ) {}
 
   @Post()
-  // 임시: 인증 없이 사용 가능 (나중에 로그인 기능 추가 시 @UseGuards(AuthenticatedGuard) 추가)
   @UseInterceptors(FileInterceptor("image"))
   @ApiOperation({
     summary: '이미지 편집',

@@ -1,8 +1,6 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, CanActivate } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 /**
@@ -10,12 +8,12 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
  * 
  * 인증된 사용자만 접근 가능하도록 하는 Guard
  * 
+ * passport.session() 미들웨어가 deserializeUser()를 호출하여 req.user를 설정한 후,
+ * 이 Guard가 req.user를 확인합니다.
+ * 
  * 사용법:
  * @UseGuards(AuthenticatedGuard)
  * async someMethod() { ... }
- * 
- * 또는 전역으로 설정:
- * app.useGlobalGuards(new AuthenticatedGuard());
  * 
  * @Public() 데코레이터가 있으면 인증 없이 접근 가능
  * 
@@ -24,13 +22,11 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
  * - true: 정상적인 인증 검증 수행 (main branch 배포 시)
  */
 @Injectable()
-export class AuthenticatedGuard extends AuthGuard('session') {
+export class AuthenticatedGuard implements CanActivate {
   constructor(
     protected reflector: Reflector,
     protected configService: ConfigService,
-  ) {
-    super();
-  }
+  ) {}
 
   /**
    * 인증 검증
@@ -38,7 +34,7 @@ export class AuthenticatedGuard extends AuthGuard('session') {
    * @param context ExecutionContext
    * @returns 인증 성공 여부
    */
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     // AUTH_ENABLED가 false면 인증 없이 통과 (일시적으로 인증 비활성화)
     const authEnabled = this.configService.get<boolean>('app.AUTH_ENABLED', false);
     if (!authEnabled) {
@@ -67,36 +63,15 @@ export class AuthenticatedGuard extends AuthGuard('session') {
       return true;
     }
     
-    return super.canActivate(context);
-  }
-
-  /**
-   * 인증 실패 시 처리
-   * 
-   * @param err 에러 객체
-   * @param user 사용자 객체
-   * @param info 추가 정보
-   * @returns UnauthorizedException
-   */
-  handleRequest(err: any, user: any, info: any) {
-    // AUTH_ENABLED가 false면 이미 canActivate에서 처리되었으므로 여기서는 체크하지 않음
-    const authEnabled = this.configService.get<boolean>('app.AUTH_ENABLED', false);
-    if (!authEnabled) {
-      // 인증이 비활성화된 경우 더미 사용자 반환
-      return user || {
-        id: 1,
-        email: 'dev@example.com',
-        username: 'dev_user',
-        role: 'USER',
-      };
+    const request = context.switchToHttp().getRequest();
+    console.log('🛡️ [AuthenticatedGuard] canActivate, path:', request.path, 'req.user:', request.user ? request.user.email : 'null');
+    
+    // passport.session() 미들웨어가 deserializeUser()를 호출하여 req.user를 설정했는지 확인
+    if (!request.user) {
+      throw new UnauthorizedException('로그인이 필요합니다.');
     }
-
-    // @Public() 데코레이터가 있으면 이 메서드는 호출되지 않아야 하지만,
-    // 혹시 모를 경우를 대비해 체크
-    if (err || !user) {
-      throw err || new UnauthorizedException('로그인이 필요합니다.');
-    }
-    return user;
+    
+    return true;
   }
 }
 

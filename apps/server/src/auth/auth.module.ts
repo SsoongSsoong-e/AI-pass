@@ -7,7 +7,7 @@ import { OAuthAccount } from '../users/entities/oauth-account.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { SessionStrategy } from './strategies/session.strategy';
+// import { SessionStrategy } from './strategies/session.strategy'; // 제거 - passport.session()이 deserializeUser()만 사용하도록
 import { SessionSerializer } from './serializers/passport.serializer';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
 
@@ -26,7 +26,7 @@ import { AuthenticatedGuard } from './guards/authenticated.guard';
   providers: [
     AuthService,
     GoogleStrategy,
-    SessionStrategy,
+    // SessionStrategy, // 제거 - passport.session()이 deserializeUser()만 사용하도록
     SessionSerializer,
     AuthenticatedGuard,
   ],
