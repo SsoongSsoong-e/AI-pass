@@ -1,0 +1,366 @@
+[
+  {
+    "timestamp": "2025-11-23T15:16:23.372Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910983372_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:23.542Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910983372_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 170
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:23.860Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910983860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:23.961Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910983860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 101
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:24.360Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910984360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 11576
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:24.455Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910984360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 95
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:24.860Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910984860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 15792
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:24.947Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910984860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": false,
+      "duration": 87
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:25.359Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910985359_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17004
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:25.452Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910985359_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 93
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:25.859Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910985859_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 16832
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:25.935Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910985859_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 76
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:26.361Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910986361_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17204
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:26.436Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910986361_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 75
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:26.860Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910986860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17288
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:26.935Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910986860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 75
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:27.360Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910987360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17260
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:27.438Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910987360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 78
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:27.860Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910987860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17212
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:27.935Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910987860_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 75
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:28.360Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910988360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17276
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:28.436Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910988360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 76
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:28.858Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910988858_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17284
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:28.923Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910988858_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 65
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:29.360Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910989360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "imageSize": 17280
+    }
+  },
+  {
+    "timestamp": "2025-11-23T15:16:29.433Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "-nGN1RGazvnbk11IAAAC",
+    "requestId": "1763910989360_-nGN1RGazvnbk11IAAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 73
+    }
+  }
+]

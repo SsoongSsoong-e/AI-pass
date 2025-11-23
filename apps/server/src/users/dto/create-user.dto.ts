@@ -39,10 +39,14 @@ export class CreateUserDto {
 
     @ApiPropertyOptional({
         enum: UserRole,
+        enumName: 'UserRole',
         default: UserRole.USER,
         description: '사용자 권한. 별도 지정이 없으면 사용자로 생성',
+        example: UserRole.USER,
     })
     @IsOptional()
-    @IsEnum(UserRole)
-    role: UserRole;
+    @IsEnum(UserRole, {
+        message: 'role must be one of: user, admin',
+    })
+    role?: UserRole;
 }

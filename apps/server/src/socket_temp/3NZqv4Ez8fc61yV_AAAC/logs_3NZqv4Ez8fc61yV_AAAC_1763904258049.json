@@ -1,0 +1,1918 @@
+[
+  {
+    "timestamp": "2025-11-23T13:23:08.875Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904188875_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:08.915Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904188875_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:09.364Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904189364_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:09.368Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904189364_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:09.869Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904189869_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:09.882Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904189869_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:10.363Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904190363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:10.368Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904190363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:10.863Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904190863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:10.867Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904190863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:11.363Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904191363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:11.366Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904191363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:11.863Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904191863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:11.868Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904191863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:12.364Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904192363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:12.367Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904192363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:12.863Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904192863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:12.868Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904192863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:13.363Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904193363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:13.365Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904193363_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:13.862Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904193862_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 1392
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:13.865Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904193862_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:14.367Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904194367_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 13760
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:14.371Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904194367_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:14.868Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904194868_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14628
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:14.874Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904194868_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:15.367Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904195367_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15516
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:15.372Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904195367_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:15.865Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904195865_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15076
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:15.870Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904195865_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:16.364Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904196364_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15164
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:16.367Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904196364_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:16.863Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904196863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14988
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:16.867Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904196863_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:17.365Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904197365_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16148
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:17.368Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904197365_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:17.865Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904197865_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16340
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:17.868Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904197865_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:18.368Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904198368_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15080
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:18.372Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904198368_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:18.866Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904198866_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14852
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:18.869Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904198866_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:19.366Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904199366_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15344
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:19.370Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904199366_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:19.944Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904199944_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15276
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:19.957Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904199944_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:20.365Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904200365_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16016
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:20.368Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904200365_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:20.865Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904200865_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16164
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:20.869Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904200865_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:21.629Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904201629_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16188
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:21.634Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904201629_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:22.642Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904202642_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16156
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:22.659Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904202642_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:23.639Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904203638_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16268
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:23.660Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904203638_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:24.636Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904204636_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16412
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:24.650Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904204636_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:25.622Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904205622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16316
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:25.625Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904205622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:26.621Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904206621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16116
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:26.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904206621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:27.628Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904207628_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16232
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:27.632Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904207628_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:28.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904208619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16468
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:28.623Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904208619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:29.634Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904209634_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16448
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:29.677Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904209634_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:30.621Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904210621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16340
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:30.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904210621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:31.623Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904211623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16340
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:31.628Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904211623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:32.618Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904212618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16336
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:32.622Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904212618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:33.621Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904213621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16120
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:33.630Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904213621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:34.617Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904214617_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16324
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:34.619Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904214617_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:35.618Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904215618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16240
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:35.623Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904215618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:36.623Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904216622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16180
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:36.639Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904216622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:37.621Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904217621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16024
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:37.627Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904217621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:38.624Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904218624_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16048
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:38.642Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904218624_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:39.623Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904219623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15124
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:39.627Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904219623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:40.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904220619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15468
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:40.622Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904220619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:41.621Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904221621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15596
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:41.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904221621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:42.623Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904222623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15772
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:42.630Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904222623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:43.622Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904223622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15556
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:43.627Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904223622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:44.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904224619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15616
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:44.623Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904224619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:45.621Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904225621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15672
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:45.626Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904225621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:46.620Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904226620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 16040
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:46.621Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904226620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:47.620Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904227620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15716
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:47.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904227620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:48.621Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904228621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15604
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:48.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904228621_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:49.622Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904229622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15712
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:49.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904229622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:50.620Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904230620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15560
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:50.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904230620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:51.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904231619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15700
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:51.621Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904231619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:52.620Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904232620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15276
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:52.621Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904232620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:53.618Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904233618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15188
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:53.621Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904233618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:54.618Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904234618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15092
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:54.621Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904234618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:55.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904235619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15272
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:55.621Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904235619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:56.627Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904236627_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14624
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:56.630Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904236627_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:57.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904237619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14856
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:57.623Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904237619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:58.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904238619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14664
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:58.623Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904238619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:59.620Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904239620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15020
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:23:59.622Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904239620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:00.618Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904240618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15176
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:00.626Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904240618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:01.620Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904241620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14848
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:01.622Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904241620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:02.622Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904242622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14984
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:02.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904242622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:03.618Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904243618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14960
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:03.625Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904243618_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:04.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904244619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15216
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:04.621Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904244619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:05.620Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904245620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15172
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:05.622Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904245620_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:06.619Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904246619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15104
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:06.624Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904246619_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:07.623Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904247623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15128
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:07.627Z",
+    "level": "error",
+    "message": "에러 발생",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904247623_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "error": "Model inference failed"
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:08.622Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904248622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15112
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:08.764Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904248622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 142
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:09.636Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904249636_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15136
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:09.719Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904249636_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 82
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:10.622Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904250622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15144
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:10.846Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904250622_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 224
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:11.719Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904251718_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14888
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:11.925Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904251718_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        0,
+        1,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 207
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:12.264Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904252264_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14880
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:12.477Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904252477_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15132
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:12.533Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904252264_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 269
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:12.691Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904252477_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "isSuccess": false,
+      "duration": 214
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:12.870Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904252870_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15356
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:12.997Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904252870_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 127
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:13.376Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904253376_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 14700
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:13.666Z",
+    "level": "info",
+    "message": "검증 실패",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904253376_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        0,
+        1,
+        1
+      ],
+      "isSuccess": false,
+      "duration": 290
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:13.866Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904253866_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15388
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:13.992Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904253866_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 126
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:14.367Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904254367_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15036
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:14.456Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904254367_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 89
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:14.868Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904254868_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15444
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:14.965Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904254868_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 97
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:15.372Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904255372_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15352
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:15.468Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904255372_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 96
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:15.869Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904255869_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15548
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:15.966Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904255869_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 97
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:16.369Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904256369_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15648
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:16.470Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904256369_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 101
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:16.872Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904256872_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15600
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:16.970Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904256872_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 98
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:17.369Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904257369_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15564
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:17.438Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904257369_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 69
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:17.875Z",
+    "level": "info",
+    "message": "요청 시작",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904257875_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "imageSize": 15632
+    }
+  },
+  {
+    "timestamp": "2025-11-23T13:24:17.965Z",
+    "level": "info",
+    "message": "검증 성공",
+    "clientId": "3NZqv4Ez8fc61yV_AAAC",
+    "requestId": "1763904257875_3NZqv4Ez8fc61yV_AAAC",
+    "details": {
+      "verificationResult": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "isSuccess": true,
+      "duration": 89
+    }
+  }
+]

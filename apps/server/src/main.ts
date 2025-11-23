@@ -101,15 +101,14 @@ async function bootstrap() {
   if (authEnabled) {
     // 인증이 활성화된 경우에만 passport.session() 적용
     app.use((req, res, next) => {
-      const isPhotoEditPath = req.path?.startsWith('/photo-edit');
       // OAuth 경로는 세션 인증이 필요 없으므로 미들웨어를 아예 실행하지 않음
       const isAuthPath = req.path?.startsWith('/auth/google') || req.path === '/auth/google/callback';
       
-      if (isPhotoEditPath || isAuthPath) {
-        // photo-edit 경로와 OAuth 경로는 passport.session() 미들웨어를 우회
+      if (isAuthPath) {
+        // OAuth 경로만 passport.session() 미들웨어를 우회
         return next();
       }
-      // 다른 경로는 passport.session() 적용
+      // 다른 경로(photo-edit 포함)는 passport.session() 적용
       console.log('🔄 [main.ts] passport.session() 실행, path:', req.path, 'sessionID:', req.sessionID);
       passport.session()(req, res, (err) => {
         if (err) {
