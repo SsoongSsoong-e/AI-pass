@@ -130,8 +130,12 @@ const WebcamPage = () => {
   };
 
   const handleCaptureClick = () => {
-    //@ts-ignore
-    navigate(`/confirm?image=${encodeURIComponent(captureImage())}`);
+    const capturedImageData = captureImage();
+    if (capturedImageData) {
+      // sessionStorage에 저장
+      sessionStorage.setItem("capturedImage", capturedImageData);
+      navigate("/confirm");
+    }
   };
 
   const captureAndSendFrame = () => {
@@ -159,7 +163,7 @@ const WebcamPage = () => {
       setVerificationResult(null);
     }
 
-    socketRef.current = io(`${import.meta.env.VITE_BASE_URL}/socket`);
+    socketRef.current = io(`${API_BASE_URL}/socket`);
     socketRef.current.on(
       "stream",
       (data: { tempVerificationResult: number[] | null }) => {

@@ -18,14 +18,26 @@ interface UserProfile {
 
 const AlbumUploadPage = () => {
   const navigate = useNavigate();
-  const queryParams = new URLSearchParams(window.location.search);
-  const [selectedImgUrl, setSelectedImgUrl] = useState<string>(
-    queryParams.get("image") ?? ""
-  );
+  const [selectedImgUrl, setSelectedImgUrl] = useState<string>("");
   const { verificationResult, setVerificationResult } = useContext(PhotoContext);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // sessionStorage에서 이미지 가져오기
+  useEffect(() => {
+    const storedImage = sessionStorage.getItem("uploadedImage");
+    if (storedImage) {
+      setSelectedImgUrl(storedImage);
+    } else {
+      // fallback: URL에서 가져오기
+      const queryParams = new URLSearchParams(window.location.search);
+      const imgFromUrl = queryParams.get("image");
+      if (imgFromUrl) {
+        setSelectedImgUrl(imgFromUrl);
+      }
+    }
+  }, []);
 
   // 사용자 프로필 가져오기
   useEffect(() => {
@@ -93,7 +105,8 @@ const AlbumUploadPage = () => {
         reader.onload = () => {
           const imgUrl = reader.result as string;
           setSelectedImgUrl(imgUrl);
-          navigate(`/album?image=${encodeURIComponent(imgUrl)}`);
+          sessionStorage.setItem("uploadedImage", imgUrl);
+          navigate("/album");
         };
         reader.readAsDataURL(file);
       }
@@ -112,7 +125,8 @@ const AlbumUploadPage = () => {
         reader.onload = () => {
           const imgUrl = reader.result as string;
           setSelectedImgUrl(imgUrl);
-          navigate(`/album?image=${encodeURIComponent(imgUrl)}`);
+          sessionStorage.setItem("uploadedImage", imgUrl);
+          navigate("/album");
         };
         reader.readAsDataURL(file);
       }
@@ -139,9 +153,11 @@ const AlbumUploadPage = () => {
         },
       });
       setVerificationResult(res.data.tempVerificationResult);
-      navigate(`/confirm?image=${encodeURIComponent(selectedImgUrl)}`);
+      sessionStorage.setItem("capturedImage", selectedImgUrl);
+      navigate("/confirm");
     } catch (err) {
       console.error(err);
+      alert("사진 검증에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
