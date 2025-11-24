@@ -10,8 +10,6 @@ import {
 import { Server, Socket } from "socket.io";
 import axios from "axios";
 import { ConfigService } from "@nestjs/config";
-import { SocketLoggingService } from "../socket-logging/socket-logging.service";
-import { RequestHistoryItem } from "../socket-logging/interfaces/request-history-item.interface";
 
 // 인터페이스 정의
 interface RequestState {
@@ -47,9 +45,7 @@ export class SocketGateway {
 
   private readonly modelServerUrl: string;
 
-  // SocketLoggingService 주입
   constructor(
-    private readonly loggingService: SocketLoggingService,
     private readonly configService: ConfigService,
   ) {
     // env.config.ts에서 환경에 맞는 URL 가져오기 (개발: localhost, 프로덕션: host.docker.internal)
@@ -90,8 +86,8 @@ export class SocketGateway {
     // 메모리 정리
     this.clientMemory.delete(clientId);
 
-    // 로그 및 히스토리 파일 저장
-    await this.loggingService.saveClientData(clientId);
+    // 로그 저장
+    console.log(`[SocketGateway] Client disconnected: ${clientId}`);
   }
 
   /**
@@ -198,7 +194,7 @@ export class SocketGateway {
 
     // Base64 유효성 검사
     if (!imageBlob || !imageBlob.startsWith("/9j/")) {
-      this.loggingService.addLog(clientId, "error", "Invalid image data");
+      console.error(`[SocketGateway] Invalid image data from client: ${clientId}`);
       client.emit("stream", { error: "Invalid image data" });
       return;
     }
@@ -233,18 +229,8 @@ export class SocketGateway {
       memoryUsage: imageBlob.length,
     });
 
-    // 히스토리에 추가
-    this.loggingService.addHistory(clientId, {
-      requestId,
-      timestamp: Date.now(),
-      status: "pending",
-      memoryUsed: imageBlob.length,
-    });
-
     // 로깅
-    this.loggingService.addLog(clientId, "info", "요청 시작", requestId, {
-      imageSize: imageBlob.length,
-    });
+    console.log(`[SocketGateway] Request started - clientId: ${clientId}, requestId: ${requestId}, imageSize: ${imageBlob.length}`);
 
     // 처리 중인 요청이 없으면 처리 시작
     if (!queue.processing) {
@@ -287,24 +273,10 @@ export class SocketGateway {
       // 메모리 해제
       this.releaseMemory(clientId, requestState);
 
-      // 히스토리 업데이트
-      this.loggingService.updateHistory(clientId, requestState.requestId, {
-        status: isSuccess ? "completed" : "failed",
-        verificationResult,
-        duration,
-      });
-
       // 로깅
-      this.loggingService.addLog(
-        clientId,
-        "info",
-        isSuccess ? "검증 성공" : "검증 실패",
-        requestState.requestId,
-        {
-          verificationResult,
-          isSuccess,
-          duration,
-        }
+      console.log(
+        `[SocketGateway] ${isSuccess ? "검증 성공" : "검증 실패"} - clientId: ${clientId}, requestId: ${requestState.requestId}, duration: ${duration}ms`,
+        { verificationResult }
       );
 
       // 클라이언트에 결과 전송
@@ -325,11 +297,8 @@ export class SocketGateway {
         error.name === "CanceledError" ||
         error.code === "ERR_CANCELED"
       ) {
-        this.loggingService.addLog(
-          clientId,
-          "debug",
-          "요청 취소됨",
-          requestState.requestId
+        console.log(
+          `[SocketGateway] Request canceled - clientId: ${clientId}, requestId: ${requestState.requestId}`
         );
         // 다음 요청 처리
         queue.processing = null;
@@ -345,16 +314,11 @@ export class SocketGateway {
       // 메모리 해제
       this.releaseMemory(clientId, requestState);
 
-      // 히스토리 업데이트
-      this.loggingService.updateHistory(clientId, requestState.requestId, {
-        status: "failed",
-        duration: Date.now() - requestState.startTime,
-      });
-
       // 로깅
-      this.loggingService.addLog(clientId, "error", "에러 발생", requestState.requestId, {
-        error: error.message,
-      });
+      console.error(
+        `[SocketGateway] Error occurred - clientId: ${clientId}, requestId: ${requestState.requestId}, error: ${error.message}`,
+        error
+      );
 
       // 클라이언트에 에러 응답
       requestState.client.emit("stream", {
