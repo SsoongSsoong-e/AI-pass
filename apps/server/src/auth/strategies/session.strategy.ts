@@ -30,10 +30,9 @@ export class SessionStrategy extends PassportStrategy(Strategy, 'session') {
       return done(null, req.user as User | undefined || null);
     }
 
-    // 임시: photo-edit 경로는 인증 없이 통과 (나중에 로그인 기능 추가 시 수정)
+    // photo-edit 경로는 AuthenticatedGuard로 보호되므로 여기서는 통과
     const isPhotoEditPath = req.path?.startsWith('/photo-edit');
     if (isPhotoEditPath) {
-      // photo-edit 경로는 인증 없이 통과 (가드가 없으면 user가 없어도 OK)
       return done(null, req.user as User | undefined || null);
     }
 

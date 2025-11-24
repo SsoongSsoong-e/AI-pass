@@ -6,6 +6,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { Public } from './decorators/public.decorator';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
+import { ErrorResponseDto } from '../common/dto/error-response.dto';
 
 @ApiTags("auth")
 @Controller('auth')
@@ -79,38 +80,6 @@ export class AuthController {
     });
   }
 
-  @Get('session/test')
-  @Public() // 테스트용이므로 Public
-  @ApiOperation({
-    summary: '세션 테스트 엔드포인트',
-    description: `세션 ID와 사용자 정보를 반환합니다. (테스트용)<br>쿠키가 제대로 전송되는지 확인할 수 있습니다.`
-  })
-  @ApiResponse({
-    status: 200,
-    description: '세션 정보 반환',
-    schema: {
-      type: 'object',
-      properties: {
-        sessionId: { type: 'string', example: 'abc123...' },
-        hasSession: { type: 'boolean', example: true },
-        hasUser: { type: 'boolean', example: true },
-        user: { type: 'object', nullable: true },
-        cookies: { type: 'string', example: 'connect.sid=...' },
-        message: { type: 'string', example: '세션 테스트 성공' },
-      }
-    }
-  })
-  async testSession(@Req() req: Request) {
-    return {
-      sessionId: req.sessionID,
-      hasSession: !!req.session,
-      hasUser: !!req.user,
-      user: req.user || null,
-      cookies: req.headers.cookie || 'No cookies',
-      message: '세션 테스트 성공',
-    };
-  }
-
   @Get('session/user')
   @Public() // Public으로 변경하여 세션이 없어도 접근 가능 (랜딩 페이지에서 사용)
   @ApiOperation({
@@ -128,13 +97,34 @@ export class AuthController {
             id: { type: 'number', example: 1 },
             email: { type: 'string', example: 'user@example.com' },
             username: { type: 'string', example: 'testuser' },
-            profile_picture: { type: 'string', nullable: true },
+            profile_picture: { 
+              type: 'string', 
+              nullable: true,
+              example: 'https://lh3.googleusercontent.com/a/default-user'
+            },
             role: { type: 'string', example: 'USER' },
-            created_at: { type: 'string', format: 'date-time' },
-            updated_at: { type: 'string', format: 'date-time' },
+            created_at: { 
+              type: 'string', 
+              format: 'date-time',
+              example: '2024-01-01T00:00:00.000Z'
+            },
+            updated_at: { 
+              type: 'string', 
+              format: 'date-time',
+              example: '2024-01-01T00:00:00.000Z'
+            },
+          },
+          example: {
+            id: 1,
+            email: 'user@example.com',
+            username: 'testuser',
+            profile_picture: 'https://lh3.googleusercontent.com/a/default-user',
+            role: 'USER',
+            created_at: '2024-01-01T00:00:00.000Z',
+            updated_at: '2024-01-01T00:00:00.000Z'
           }
         },
-        { type: 'null' }
+        { type: 'null', example: null }
       ]
     }
   })
@@ -160,7 +150,49 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '로그아웃 완료' }
+        message: { 
+          type: 'string', 
+          example: '로그아웃 완료' 
+        }
+      },
+      example: {
+        message: '로그아웃 완료'
+      }
+    }
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
+  })
+  @ApiResponse({
+    status: 500,
+    description: '로그아웃 처리 중 오류 발생',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '로그아웃 중 오류가 발생했습니다.' },
+        statusCode: { type: 'number', example: 500 },
+        error: { type: 'string', example: 'Internal Server Error' }
+      },
+      example: {
+        message: '로그아웃 중 오류가 발생했습니다.',
+        statusCode: 500,
+        error: 'Internal Server Error'
       }
     }
   })

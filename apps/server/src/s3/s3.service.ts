@@ -48,7 +48,7 @@ export class S3Service {
 
   /**
    * S3에 파일 업로드
-   * 
+   *
    * @param buffer 업로드할 파일의 바이너리 데이터
    * @param key S3에 저장될 경로 (예: passport-photos/2024/01/uuid.png)
    * @param contentType 파일 MIME 타입 (예: image/png)
@@ -73,7 +73,7 @@ export class S3Service {
 
   /**
    * S3에서 파일 삭제
-   * 
+   *
    * @param key 삭제할 S3 객체의 경로
    * @returns 삭제 성공 여부
    */
@@ -94,7 +94,7 @@ export class S3Service {
 
   /**
    * 단일 Presigned URL 생성
-   * 
+   *
    * @param key Presigned URL을 생성할 S3 객체의 경로
    * @param expiresIn URL 만료 시간(초, 기본 3600)
    * @returns Presigned URL 문자열
@@ -216,7 +216,7 @@ export class S3Service {
   /**
    * S3 연결 상태 확인
    * HeadBucketCommand를 사용하여 버킷 접근 권한 및 연결 상태 확인
-   * 
+   *
    * @returns 연결 상태 정보
    */
   async checkHealth(): Promise<{
@@ -251,7 +251,7 @@ export class S3Service {
       };
     } catch (error: any) {
       this.logger.error('S3 연결 상태 확인 실패', error);
-      
+
       let errorMessage = 'S3 연결 실패';
       if (error.name === 'NotFound') {
         errorMessage = '버킷을 찾을 수 없습니다';

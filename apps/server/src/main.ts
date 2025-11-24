@@ -32,11 +32,11 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // ============================================
-  // 인증 설정 (일시적으로 비활성화 가능)
+  // 인증 설정
   // ============================================
   // AUTH_ENABLED 환경 변수로 인증 활성화/비활성화 제어
-  // - false (기본값): 인증 없이 모든 API 접근 가능 (로그인 기능 완성 전까지)
-  // - true: 정상적인 인증 검증 수행 (main branch 배포 시)
+  // - false: 인증 없이 모든 API 접근 가능 (개발 환경)
+  // - true: 정상적인 인증 검증 수행 (프로덕션 환경)
   // ============================================
   const authEnabled = configService.get<boolean>('app.AUTH_ENABLED', false);
 
@@ -168,17 +168,13 @@ async function bootstrap() {
     .setTitle("AI Pass API")
     .setDescription("AI Pass 여권사진 생성 및 관리 API 문서")
     .setVersion("2.0")
-    .addTag("app", "애플리케이션 기본 엔드포인트")
     .addTag("photo-edit", "사진 편집 API")
     .addTag("verification", "사진 검증 API")
-    .addTag("socket-logging", "소켓 로깅 API")
-    .addTag("socket", "소켓 관련 API")
     .addTag("users", "사용자 관리 API")
     .addTag("auth", "인증 관련 API (Google OAuth)")
     .addTag("passport-photos", "여권 사진 관리 API");
 
   // AUTH_ENABLED가 true일 때만 인증 요구사항 추가
-  // 로그인 기능 완성 전까지는 인증 없이 Swagger 문서 접근 가능
   if (authEnabled) {
     swaggerBuilder.addCookieAuth("connect.sid", {
       type: "apiKey",
@@ -191,7 +187,7 @@ async function bootstrap() {
   const config = swaggerBuilder.build();
 
   const document = SwaggerModule.createDocument(app, config);
-  
+
   // Swagger 설정 옵션
   // AUTH_ENABLED가 false면 인증 없이 Swagger 문서 접근 가능
   SwaggerModule.setup("api", app, document, {
@@ -199,7 +195,7 @@ async function bootstrap() {
       persistAuthorization: authEnabled, // 인증이 활성화된 경우에만 인증 정보 유지
     },
   });
-  
+
   await app.listen(5002, "0.0.0.0", () => {});
   //await app.listen(443);
 }

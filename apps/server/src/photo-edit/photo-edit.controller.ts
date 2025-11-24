@@ -1,20 +1,17 @@
 import {
   Controller,
   Post,
-  Get,
   UseInterceptors,
   UploadedFile,
   Res,
   UseGuards,
-  HttpCode,
-  HttpStatus,
-  MethodNotAllowedException,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from "@nestjs/swagger";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { PhotoEditService } from "./photo-edit.service";
 import { Response } from "express";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { ErrorResponseDto } from "../common/dto/error-response.dto";
 
 @ApiTags('photo-edit')
 @Controller("photo-edit")
@@ -23,20 +20,6 @@ export class PhotoEditController {
   constructor(
     private readonly photoEditService: PhotoEditService,
   ) {}
-
-  @Get()
-  @HttpCode(HttpStatus.METHOD_NOT_ALLOWED)
-  @ApiOperation({
-    summary: '이미지 편집 (GET 요청 불가)',
-    description: '이미지 편집은 POST 메서드만 지원합니다. POST /photo-edit을 사용해주세요.'
-  })
-  @ApiResponse({
-    status: 405,
-    description: 'Method Not Allowed - POST 메서드를 사용해야 합니다.'
-  })
-  getPhotoEdit() {
-    throw new MethodNotAllowedException('이미지 편집은 POST 메서드만 지원합니다. POST /photo-edit을 사용해주세요.');
-  }
 
   @Post()
   @UseInterceptors(FileInterceptor("image"))
@@ -71,12 +54,56 @@ export class PhotoEditController {
     }
   })
   @ApiResponse({
-    status: 500,
-    description: '이미지 처리 실패',
+    status: 400,
+    description: '이미지 파일이 필요합니다',
+    type: ErrorResponseDto,
     schema: {
       type: 'object',
       properties: {
-        error: { type: 'string', example: 'Failed to process image' }
+        message: { type: 'string', example: '이미지 파일이 필요합니다.' },
+        statusCode: { type: 'number', example: 400 },
+        error: { type: 'string', example: 'Bad Request' }
+      },
+      example: {
+        message: '이미지 파일이 필요합니다.',
+        statusCode: 400,
+        error: 'Bad Request'
+      }
+    }
+  })
+  @ApiResponse({
+    status: 401,
+    description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
+  })
+  @ApiResponse({
+    status: 500,
+    description: '이미지 처리 실패',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Failed to process image' },
+        statusCode: { type: 'number', example: 500 },
+        error: { type: 'string', example: 'Internal Server Error' }
+      },
+      example: {
+        message: 'Failed to process image',
+        statusCode: 500,
+        error: 'Internal Server Error'
       }
     }
   })
