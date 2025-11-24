@@ -20,6 +20,7 @@ import { S3Service } from '../s3/s3.service';
 import { PhotoEditService } from '../photo-edit/photo-edit.service';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 import { UpdatePhotoDto } from './dto/update-photo.dto';
+import { ErrorResponseDto } from '../common/dto/error-response.dto';
 import { Request } from 'express';
 import { User } from '../users/entities/user.entity';
 
@@ -33,8 +34,8 @@ const MAX_PHOTOS_PER_USER = 10;
  * 인증 관련:
  * - @UseGuards(AuthenticatedGuard)가 적용되어 있지만,
  *   AUTH_ENABLED 환경 변수가 false면 인증 없이 접근 가능
- * - 로그인 기능 완성 전까지는 AUTH_ENABLED=false로 설정하여 사용
- * - main branch 배포 시 AUTH_ENABLED=true로 설정하여 재활성화
+ * - 개발 환경: AUTH_ENABLED=false로 설정하여 인증 없이 사용
+ * - 프로덕션 환경: AUTH_ENABLED=true로 설정하여 인증 필요
  */
 @ApiTags('passport-photos')
 @ApiCookieAuth('connect.sid') // Swagger 문서용 (AUTH_ENABLED=false면 실제 인증은 필요 없음)
@@ -79,52 +80,177 @@ export class PassportPhotosController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '사진이 저장되었습니다.' },
+        message: { 
+          type: 'string', 
+          example: '사진이 저장되었습니다.' 
+        },
         photo: {
           type: 'object',
           properties: {
-            _id: { type: 'string' },
-            user_id: { type: 'number', example: 1 },
+            _id: { 
+              type: 'string', 
+              example: '507f1f77bcf86cd799439011' 
+            },
+            user_id: { 
+              type: 'number', 
+              example: 1 
+            },
             photos: {
               type: 'array',
               items: {
                 type: 'object',
                 properties: {
-                  photo_id: { type: 'string' },
-                  s3_key: { type: 'string' },
-                  is_locked: { type: 'boolean' },
-                  created_at: { type: 'string', format: 'date-time' },
+                  photo_id: { 
+                    type: 'string', 
+                    example: 'photo_1704067200000_abc123xyz' 
+                  },
+                  s3_key: { 
+                    type: 'string', 
+                    example: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png' 
+                  },
+                  is_locked: { 
+                    type: 'boolean', 
+                    example: false 
+                  },
+                  created_at: { 
+                    type: 'string', 
+                    format: 'date-time',
+                    example: '2024-01-01T00:00:00.000Z'
+                  },
                 }
-              }
+              },
+              example: [
+                {
+                  photo_id: 'photo_1704067200000_abc123xyz',
+                  s3_key: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png',
+                  is_locked: false,
+                  created_at: '2024-01-01T00:00:00.000Z'
+                }
+              ]
             },
             _stats: {
               type: 'object',
               properties: {
-                total: { type: 'number' },
-                locked: { type: 'number' },
-                unlocked: { type: 'number' },
-                oldest_unlocked_index: { type: 'number' },
+                total: { 
+                  type: 'number', 
+                  example: 1 
+                },
+                locked: { 
+                  type: 'number', 
+                  example: 0 
+                },
+                unlocked: { 
+                  type: 'number', 
+                  example: 1 
+                },
+                oldest_unlocked_index: { 
+                  type: 'number', 
+                  example: 0 
+                },
+              },
+              example: {
+                total: 1,
+                locked: 0,
+                unlocked: 1,
+                oldest_unlocked_index: 0
               }
             },
-            created_at: { type: 'string', format: 'date-time' },
-            updated_at: { type: 'string', format: 'date-time' },
+            created_at: { 
+              type: 'string', 
+              format: 'date-time',
+              example: '2024-01-01T00:00:00.000Z'
+            },
+            updated_at: { 
+              type: 'string', 
+              format: 'date-time',
+              example: '2024-01-01T00:00:00.000Z'
+            },
           }
         },
-        s3Key: { type: 'string', example: 'passport-photos/2024/01/uuid.png' }
+        s3Key: { 
+          type: 'string', 
+          example: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png' 
+        }
+      },
+      example: {
+        message: '사진이 저장되었습니다.',
+        photo: {
+          _id: '507f1f77bcf86cd799439011',
+          user_id: 1,
+          photos: [
+            {
+              photo_id: 'photo_1704067200000_abc123xyz',
+              s3_key: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png',
+              is_locked: false,
+              created_at: '2024-01-01T00:00:00.000Z'
+            }
+          ],
+          _stats: {
+            total: 1,
+            locked: 0,
+            unlocked: 1,
+            oldest_unlocked_index: 0
+          },
+          created_at: '2024-01-01T00:00:00.000Z',
+          updated_at: '2024-01-01T00:00:00.000Z'
+        },
+        s3Key: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png'
       }
     }
   })
   @ApiResponse({
     status: 400,
     description: '이미지 파일이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '이미지 파일이 필요합니다.' },
+        statusCode: { type: 'number', example: 400 },
+        error: { type: 'string', example: 'Bad Request' }
+      },
+      example: {
+        message: '이미지 파일이 필요합니다.',
+        statusCode: 400,
+        error: 'Bad Request'
+      }
+    }
   })
   @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
   })
   @ApiResponse({
     status: 500,
     description: '이미지 처리 또는 저장 실패',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '이미지 처리 중 오류가 발생했습니다.' },
+        statusCode: { type: 'number', example: 500 },
+        error: { type: 'string', example: 'Internal Server Error' }
+      },
+      example: {
+        message: '이미지 처리 중 오류가 발생했습니다.',
+        statusCode: 500,
+        error: 'Internal Server Error'
+      }
+    }
   })
   async uploadPhoto(
     @UploadedFile() file: Express.Multer.File,
@@ -218,35 +344,108 @@ export class PassportPhotosController {
           items: {
             type: 'object',
             properties: {
-              photo_id: { type: 'string' },
-              s3_key: { type: 'string', example: 'passport-photos/2024/01/uuid.png' },
-              is_locked: { type: 'boolean', example: false },
-              created_at: { type: 'string', format: 'date-time' },
+              photo_id: { 
+                type: 'string', 
+                example: 'photo_1704067200000_abc123xyz' 
+              },
+              s3_key: { 
+                type: 'string', 
+                example: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png' 
+              },
+              is_locked: { 
+                type: 'boolean', 
+                example: false 
+              },
+              created_at: { 
+                type: 'string', 
+                format: 'date-time',
+                example: '2024-01-01T00:00:00.000Z'
+              },
               presignedUrl: {
                 type: 'object',
                 properties: {
-                  url: { type: 'string', example: 'https://...' },
-                  expiresAt: { type: 'number', example: 1704067200000 }
+                  url: { 
+                    type: 'string', 
+                    example: 'https://s3.amazonaws.com/bucket-name/passport-photos/2024/01/uuid.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&...' 
+                  },
+                  expiresAt: { 
+                    type: 'number', 
+                    example: 1704070800000 
+                  }
                 }
               }
             }
-          }
+          },
+          example: [
+            {
+              photo_id: 'photo_1704067200000_abc123xyz',
+              s3_key: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png',
+              is_locked: false,
+              created_at: '2024-01-01T00:00:00.000Z',
+              presignedUrl: {
+                url: 'https://s3.amazonaws.com/bucket-name/passport-photos/2024/01/uuid.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&...',
+                expiresAt: 1704070800000
+              }
+            }
+          ]
         },
         count: {
           type: 'object',
           properties: {
-            total: { type: 'number', example: 5 },
-            locked: { type: 'number', example: 2 },
-            unlocked: { type: 'number', example: 3 },
-            maxCount: { type: 'number', example: 10 }
+            total: { 
+              type: 'number', 
+              example: 5 
+            },
+            locked: { 
+              type: 'number', 
+              example: 2 
+            },
+            unlocked: { 
+              type: 'number', 
+              example: 3 
+            },
+            maxCount: { 
+              type: 'number', 
+              example: 10 
+            }
+          },
+          example: {
+            total: 5,
+            locked: 2,
+            unlocked: 3,
+            maxCount: 10
           }
         }
+      },
+      example: {
+        photos: [
+          {
+            photo_id: 'photo_1704067200000_abc123xyz',
+            s3_key: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png',
+            is_locked: false,
+            created_at: '2024-01-01T00:00:00.000Z'
+          }
+        ]
       }
     }
   })
   @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
   })
   async getPhotos(
     @Req() req: Request,
@@ -329,16 +528,45 @@ export class PassportPhotosController {
     schema: {
       type: 'object',
       properties: {
-        photo_id: { type: 'string' },
-        s3_key: { type: 'string' },
-        is_locked: { type: 'boolean' },
-        created_at: { type: 'string', format: 'date-time' },
+        photo_id: { 
+          type: 'string', 
+          example: 'photo_1704067200000_abc123xyz' 
+        },
+        s3_key: { 
+          type: 'string', 
+          example: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png' 
+        },
+        is_locked: { 
+          type: 'boolean', 
+          example: false 
+        },
+        created_at: { 
+          type: 'string', 
+          format: 'date-time',
+          example: '2024-01-01T00:00:00.000Z'
+        },
         presignedUrl: {
           type: 'object',
           properties: {
-            url: { type: 'string' },
-            expiresAt: { type: 'number' }
+            url: { 
+              type: 'string', 
+              example: 'https://s3.amazonaws.com/bucket-name/passport-photos/2024/01/uuid.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&...' 
+            },
+            expiresAt: { 
+              type: 'number', 
+              example: 1704070800000 
+            }
           }
+        }
+      },
+      example: {
+        photo_id: 'photo_1704067200000_abc123xyz',
+        s3_key: 'passport-photos/2024/01/a1b2c3d4-e5f6-7890-abcd-ef1234567890.png',
+        is_locked: false,
+        created_at: '2024-01-01T00:00:00.000Z',
+        presignedUrl: {
+          url: 'https://s3.amazonaws.com/bucket-name/passport-photos/2024/01/uuid.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&...',
+          expiresAt: 1704070800000
         }
       }
     }
@@ -346,10 +574,38 @@ export class PassportPhotosController {
   @ApiResponse({
     status: 404,
     description: '사진을 찾을 수 없음',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '사진을 찾을 수 없습니다.' },
+        statusCode: { type: 'number', example: 404 },
+        error: { type: 'string', example: 'Not Found' }
+      },
+      example: {
+        message: '사진을 찾을 수 없습니다.',
+        statusCode: 404,
+        error: 'Not Found'
+      }
+    }
   })
   @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
   })
   async getPhoto(
     @Req() req: Request,
@@ -402,21 +658,69 @@ export class PassportPhotosController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '사진이 수정되었습니다.' }
+        message: { 
+          type: 'string', 
+          example: '사진이 수정되었습니다.' 
+        }
+      },
+      example: {
+        message: '사진이 수정되었습니다.'
       }
     }
   })
   @ApiResponse({
     status: 404,
     description: '사진을 찾을 수 없음',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '사진을 찾을 수 없습니다.' },
+        statusCode: { type: 'number', example: 404 },
+        error: { type: 'string', example: 'Not Found' }
+      },
+      example: {
+        message: '사진을 찾을 수 없습니다.',
+        statusCode: 404,
+        error: 'Not Found'
+      }
+    }
   })
   @ApiResponse({
     status: 400,
     description: '잘못된 요청 (이미 같은 상태)',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '이미 해당 상태입니다.' },
+        statusCode: { type: 'number', example: 400 },
+        error: { type: 'string', example: 'Bad Request' }
+      },
+      example: {
+        message: '이미 해당 상태입니다.',
+        statusCode: 400,
+        error: 'Bad Request'
+      }
+    }
   })
   @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
   })
   async updatePhoto(
     @Req() req: Request,
@@ -451,21 +755,69 @@ export class PassportPhotosController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '사진이 삭제되었습니다.' }
+        message: { 
+          type: 'string', 
+          example: '사진이 삭제되었습니다.' 
+        }
+      },
+      example: {
+        message: '사진이 삭제되었습니다.'
       }
     }
   })
   @ApiResponse({
     status: 403,
     description: '잠금된 사진은 삭제할 수 없습니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '잠금된 사진은 삭제할 수 없습니다.' },
+        statusCode: { type: 'number', example: 403 },
+        error: { type: 'string', example: 'Forbidden' }
+      },
+      example: {
+        message: '잠금된 사진은 삭제할 수 없습니다.',
+        statusCode: 403,
+        error: 'Forbidden'
+      }
+    }
   })
   @ApiResponse({
     status: 404,
     description: '사진을 찾을 수 없음',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: '사진을 찾을 수 없습니다.' },
+        statusCode: { type: 'number', example: 404 },
+        error: { type: 'string', example: 'Not Found' }
+      },
+      example: {
+        message: '사진을 찾을 수 없습니다.',
+        statusCode: 404,
+        error: 'Not Found'
+      }
+    }
   })
   @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
   })
   async deletePhoto(
     @Req() req: Request,
@@ -501,15 +853,45 @@ export class PassportPhotosController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: '사진이 삭제되었습니다.' },
-        deleted: { type: 'number', example: 5, description: '삭제된 사진 개수' },
-        skipped: { type: 'number', example: 2, description: '건너뛴 사진 개수 (잠금된 사진)' }
+        message: { 
+          type: 'string', 
+          example: '사진이 삭제되었습니다.' 
+        },
+        deleted: { 
+          type: 'number', 
+          example: 5, 
+          description: '삭제된 사진 개수' 
+        },
+        skipped: { 
+          type: 'number', 
+          example: 2, 
+          description: '건너뛴 사진 개수 (잠금된 사진)' 
+        }
+      },
+      example: {
+        message: '사진이 삭제되었습니다.',
+        deleted: 5,
+        skipped: 2
       }
     }
   })
   @ApiResponse({
     status: 401,
     description: '인증이 필요합니다',
+    type: ErrorResponseDto,
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Unauthorized' },
+        statusCode: { type: 'number', example: 401 },
+        error: { type: 'string', example: 'Unauthorized' }
+      },
+      example: {
+        message: 'Unauthorized',
+        statusCode: 401,
+        error: 'Unauthorized'
+      }
+    }
   })
   async deleteAllPhotos(
     @Req() req: Request,

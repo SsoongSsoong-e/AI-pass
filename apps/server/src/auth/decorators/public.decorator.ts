@@ -9,10 +9,6 @@ import { SetMetadata } from '@nestjs/common';
  * @Public()
  * @Post()
  * async someMethod() { ... }
- * 
- * 나중에 로그인 기능을 추가한 후:
- * - 인증이 필요한 엔드포인트에서 @Public() 제거
- * - 또는 @UseGuards(AuthenticatedGuard) 추가
  */
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);

@@ -77,8 +77,8 @@ export default registerAs('app', () => {
     ),
 
     // 인증 활성화 여부
-    // 로그인 기능 완성 전까지는 false로 설정하여 인증 없이 사용
-    // main branch 배포 시 AUTH_ENABLED=true로 설정하여 재활성화
+    // 개발 환경: false (인증 없이 사용)
+    // 프로덕션 환경: true (인증 필요)
     AUTH_ENABLED: process.env.AUTH_ENABLED === 'true' || false,
   };
 

@@ -51,9 +51,9 @@ export interface EnvironmentVariables {
   // 프론트엔드 URL (Sub-path 방식)
   FRONTEND_URL?: string;
 
-  // 인증 활성화 여부 (일시적으로 비활성화 가능)
-  // false: 인증 없이 모든 API 접근 가능 (로그인 기능 완성 전까지)
-  // true: 인증 필요 (main branch 배포 시 활성화)
+  // 인증 활성화 여부
+  // false: 인증 없이 모든 API 접근 가능 (개발 환경)
+  // true: 인증 필요 (프로덕션 환경)
   AUTH_ENABLED?: boolean;
 }
 

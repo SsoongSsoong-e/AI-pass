@@ -18,8 +18,8 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
  * @Public() 데코레이터가 있으면 인증 없이 접근 가능
  * 
  * AUTH_ENABLED 환경 변수:
- * - false: 인증 없이 모든 요청 통과 (로그인 기능 완성 전까지)
- * - true: 정상적인 인증 검증 수행 (main branch 배포 시)
+ * - false: 인증 없이 모든 요청 통과 (개발 환경)
+ * - true: 정상적인 인증 검증 수행 (프로덕션 환경)
  */
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
@@ -35,7 +35,7 @@ export class AuthenticatedGuard implements CanActivate {
    * @returns 인증 성공 여부
    */
   canActivate(context: ExecutionContext): boolean {
-    // AUTH_ENABLED가 false면 인증 없이 통과 (일시적으로 인증 비활성화)
+    // AUTH_ENABLED가 false면 인증 없이 통과 (개발 환경)
     const authEnabled = this.configService.get<boolean>('app.AUTH_ENABLED', false);
     if (!authEnabled) {
       // 인증이 비활성화된 경우, 더미 사용자를 설정하여 req.user 접근 가능하도록 함
