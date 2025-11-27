@@ -98,9 +98,11 @@ const ConfirmPage = () => {
   };
 
   const handleRetakeClick = () => {
+    console.log('🔄 다시 촬영 버튼 클릭');
     sessionStorage.removeItem("capturedImage");
     sessionStorage.removeItem("editedImage");
     sessionStorage.removeItem("uploadedImage");
+    // navigate로 새로운 히스토리 엔트리 생성하여 location.key가 변경되도록 함
     navigate("/webcam");
   };
 
