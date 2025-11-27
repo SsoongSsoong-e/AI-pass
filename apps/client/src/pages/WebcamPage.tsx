@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import GuideLine from "../assets/guideLine.svg";
 import CheckSymbol from "../assets/checkSymbol.svg?react";
 import WarningImage from "../assets/warning.png";
@@ -36,9 +36,11 @@ interface Photo {
 
 const WebcamPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const socketRef = useRef<any>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isValid, setIsValid] = useState<boolean>(false);
   const { verificationResult, setVerificationResult } = useContext(PhotoContext);
@@ -70,13 +72,14 @@ const WebcamPage = () => {
     }
   }, [userProfile]);
 
-  // 페이지 진입 시 사진 개수 체크
+  // 페이지 진입 시 사진 개수 체크 - 한 번만 실행
   useEffect(() => {
     if (photoCount.total > 0 && !hasCheckedOnEntry) {
+      console.log('🎯 페이지 진입 시 한 번만 체크 실행');
       checkOnPageEntry();
       setHasCheckedOnEntry(true);
     }
-  }, [photoCount, hasCheckedOnEntry]);
+  }, [photoCount.total]);
 
   const fetchUserProfile = async () => {
     try {
@@ -129,15 +132,9 @@ const WebcamPage = () => {
   const checkOnPageEntry = async () => {
     console.log('🔍 페이지 진입 시 체크');
     console.log('📊 photoCount:', photoCount);
-    console.log('📊 photoCount.total:', photoCount.total);
-    console.log('📊 photoCount.locked:', photoCount.locked);
-    console.log('📊 photoCount.unlocked:', photoCount.unlocked);
-    console.log('📊 photoCount.maxCount:', photoCount.maxCount);
 
     if (photoCount.total >= photoCount.maxCount) {
       console.log('⚠️ 10장 도달');
-      console.log('🔍 잠금 체크: photoCount.locked === photoCount.maxCount?', photoCount.locked === photoCount.maxCount);
-      console.log('🔍 unlocked 개수:', photoCount.unlocked);
       
       if (photoCount.locked === photoCount.maxCount) {
         console.log('🔒 모두 잠금 - all-locked 모달 표시');
@@ -171,13 +168,7 @@ const WebcamPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('📷 API 응답 전체:', data);
-        console.log('📷 data의 타입:', typeof data);
-        console.log('📷 data.photos 존재?', 'photos' in data);
-        console.log('📷 Array.isArray(data)?', Array.isArray(data));
-        console.log('📷 Array.isArray(data.photos)?', data.photos ? Array.isArray(data.photos) : 'photos 없음');
         
-        // API 응답이 { photos: [...] } 형태일 수도 있고, 바로 배열일 수도 있음
         let photos: Photo[];
         if (Array.isArray(data)) {
           photos = data;
@@ -188,20 +179,13 @@ const WebcamPage = () => {
           return null;
         }
         
-        console.log('📷 사진 배열:', photos);
-        console.log('📷 사진 개수:', photos.length);
-        
         const unlockedPhotos = photos.filter(photo => !photo.is_locked);
-        console.log('🔓 잠금 해제된 사진:', unlockedPhotos);
-        console.log('🔓 잠금 해제된 사진 개수:', unlockedPhotos.length);
         
         if (unlockedPhotos.length > 0) {
           const sorted = unlockedPhotos.sort((a, b) => 
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           );
-          console.log('📅 정렬된 사진:', sorted);
           const oldest = sorted[0];
-          console.log('🎯 가장 오래된 사진:', oldest);
           return oldest.photo_id || oldest._id;
         }
       }
@@ -328,7 +312,7 @@ const WebcamPage = () => {
   };
 
   const captureAndSendFrame = () => {
-    if (canvasRef.current && videoRef.current) {
+    if (canvasRef.current && videoRef.current && videoRef.current.readyState === 4) {
       const ctx = canvasRef.current.getContext("2d");
       ctx?.drawImage(
         videoRef.current,
@@ -339,11 +323,14 @@ const WebcamPage = () => {
       );
 
       const imageData = canvasRef.current.toDataURL("image/jpeg");
-      socketRef.current.emit("stream", { image: imageData });
+      if (socketRef.current) {
+        socketRef.current.emit("stream", { image: imageData });
+      }
     }
   };
 
   const handleMetadataLoad = () => {
+    console.log('📹 Video metadata loaded');
     setIsLoading(false);
   };
 
@@ -351,11 +338,15 @@ const WebcamPage = () => {
     navigate('/gallery');
   };
 
+  // 웹캠 초기화 useEffect
   useEffect(() => {
+    console.log('🎬 카메라 초기화 시작 - location.key:', location.key);
+    
     if (verificationResult) {
       setVerificationResult(null);
     }
 
+    // Socket 초기화
     socketRef.current = io(`${API_BASE_URL}/socket`);
     socketRef.current.on(
       "stream",
@@ -364,8 +355,22 @@ const WebcamPage = () => {
       }
     );
 
+    // 웹캠 설정
     const setupWebcam = async () => {
       try {
+        console.log('📹 웹캠 설정 시작');
+        
+        // 기존 스트림 정리
+        if (streamRef.current) {
+          console.log('🧹 기존 스트림 정리');
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
+        if (videoRef.current) {
+          videoRef.current.srcObject = null;
+        }
+
+        // 새 스트림 획득
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
@@ -374,28 +379,44 @@ const WebcamPage = () => {
           },
         });
 
+        console.log('✅ 스트림 획득 성공');
+        streamRef.current = stream;
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          console.log('🎥 srcObject 설정 완료');
         }
       } catch (err) {
-        console.error("An error ocurred : ", err);
+        console.error("❌ 웹캠 설정 오류:", err);
+        setIsLoading(false);
       }
     };
+    
     setupWebcam();
 
+    // 프레임 캡처 interval
     const captureInterval = setInterval(captureAndSendFrame, 500);
 
+    // Cleanup
     return () => {
+      console.log('🔴 Cleanup 실행됨');
       clearInterval(captureInterval);
 
-      if (videoRef.current && videoRef.current.srcObject) {
-        // @ts-ignore
-        videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
       }
 
-      socketRef.current.disconnect();
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, []);
+  }, [location.key]);
 
   useEffect(() => {
     if (verificationResult?.every((item) => item === 1)) {
@@ -490,7 +511,7 @@ const WebcamPage = () => {
         </div>
       </Modal>
 
-      {/* 모두 잠금 모달 - z-index 최상단 */}
+      {/* 모두 잠금 모달 */}
       {showAllLockedModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
@@ -525,7 +546,7 @@ const WebcamPage = () => {
         </div>
       )}
 
-      {/* 자동 삭제 모달 - z-index 최상단 */}
+      {/* 자동 삭제 모달 */}
       {showAutoDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
@@ -577,7 +598,9 @@ const WebcamPage = () => {
       <div className="relative w-80 h-[414px] mb-6">
         <canvas 
           ref={canvasRef} 
-          className="absolute top-0 left-0 w-80 h-[414px]"
+          width={320}
+          height={414}
+          className="absolute top-0 left-0 w-80 h-[414px] hidden"
         />
         
         <img 
@@ -591,9 +614,8 @@ const WebcamPage = () => {
             ref={videoRef}
             onLoadedMetadata={handleMetadataLoad}
             autoPlay
-            loop
-            muted
             playsInline
+            muted
             className="w-80 h-[414px] object-cover"
             style={{ transform: 'scaleX(-1)' }}
           />
