@@ -8,6 +8,7 @@ import guideSecondImg from '../assets/guide-second.png';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 const MAX_PHOTOS_PER_USER = 10;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
 interface UserProfile {
   id: number;
@@ -17,26 +18,16 @@ interface UserProfile {
   role: string;
 }
 
-interface PhotoCount {
-  total: number;
-  locked: number;
-  unlocked: number;
-  maxCount: number;
-}
-
 export default function NewGuidePage() {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showStorageFullModal, setShowStorageFullModal] = useState(false);
-  const [photoCount, setPhotoCount] = useState<PhotoCount | null>(null);
 
-  // 페이지 로드 시 사용자 정보 및 사진 개수 가져오기
+  // 페이지 로드 시 사용자 정보 가져오기
   useEffect(() => {
     fetchUserProfile();
-    checkPhotoStorage();
   }, []);
 
   const fetchUserProfile = async () => {
@@ -61,32 +52,6 @@ export default function NewGuidePage() {
       navigate('/', { replace: true });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const checkPhotoStorage = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/passport-photos?include=count`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.count) {
-          setPhotoCount(data.count);
-          
-          // 사진이 10장 이상이면 모달 표시
-          if (data.count.total >= MAX_PHOTOS_PER_USER) {
-            setShowStorageFullModal(true);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('사진 개수 조회 오류:', error);
     }
   };
 
@@ -155,30 +120,13 @@ export default function NewGuidePage() {
   };
 
   const handleRealTimeCapture = () => {
-    // 저장 공간이 가득 찬 경우 모달 표시
-    if (photoCount && photoCount.total >= MAX_PHOTOS_PER_USER) {
-      setShowStorageFullModal(true);
-      return;
-    }
+    // 웹캠 페이지에서 10장 제한 체크
     navigate('/webcam');
   };
 
   const handleUploadPhoto = () => {
-    // 저장 공간이 가득 찬 경우 모달 표시
-    if (photoCount && photoCount.total >= MAX_PHOTOS_PER_USER) {
-      setShowStorageFullModal(true);
-      return;
-    }
+    // 앨범 페이지에서 10장 제한 체크
     navigate('/album');
-  };
-
-  const handleGoToGallery = () => {
-    setShowStorageFullModal(false);
-    navigate('/gallery');
-  };
-
-  const handleCloseModal = () => {
-    setShowStorageFullModal(false);
   };
 
   // 로딩 중일 때
@@ -205,53 +153,6 @@ export default function NewGuidePage() {
         <div className="absolute top-20 left-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
-
-      {/* 저장 공간 가득 참 모달 */}
-      {showStorageFullModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">⚠️</div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                저장 공간이 가득 찼어요
-              </h2>
-              <p className="text-gray-600 leading-relaxed">
-                최대 {MAX_PHOTOS_PER_USER}장까지 저장할 수 있어요.<br/>
-                갤러리에서 사진을 삭제한 후<br/>
-                다시 촬영해주세요.
-              </p>
-              
-              {photoCount && (
-                <div className="mt-4 p-4 bg-gray-100 rounded-xl">
-                  <p className="text-sm text-gray-700">
-                    <span className="font-bold text-indigo-600">현재 저장된 사진:</span> {photoCount.total}/{MAX_PHOTOS_PER_USER}장
-                  </p>
-                  {photoCount.locked > 0 && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      💡 잠금된 사진 {photoCount.locked}장은 자동 삭제되지 않아요
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={handleGoToGallery}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors"
-              >
-                갤러리로 이동
-              </button>
-              <button
-                onClick={handleCloseModal}
-                className="w-full py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 사이드바 네비게이션 */}
       <SidebarNavigation 
