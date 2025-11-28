@@ -8,7 +8,7 @@ import loadingImage from '../assets/loading.png';
 import WarningImage from "../assets/warning.png";
 import React from "react";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 
 interface UserProfile {
   id: number;

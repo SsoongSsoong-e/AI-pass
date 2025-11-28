@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import loadingImage from '../assets/loading.png';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 
 export default function AuthCallback() {
   const navigate = useNavigate();

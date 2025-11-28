@@ -17,23 +17,9 @@ export default defineConfig({
       "@repo/typescript-config": path.resolve(__dirname, "../../packages/typescript-config"),
     },
   },
-  esbuild: {
-    // TypeScript 설정 파일을 무시하고 직접 컴파일 옵션 지정
-    // Vite는 tsconfig.json의 extends를 해결하지 않음
-    tsconfigRaw: {
-      compilerOptions: {
-        jsx: "react-jsx",
-        target: "ES2020",
-        module: "ESNext",
-        moduleResolution: "bundler",
-        allowJs: true,
-        strict: true,
-        esModuleInterop: true,
-        skipLibCheck: true,
-        forceConsistentCasingInFileNames: true,
-      },
-    },
-  },
+  // esbuild 설정 제거
+  // Vite는 자동으로 tsconfig.json을 읽으므로 tsconfigRaw가 필요하지 않음
+  // tsconfig.node.json과 tsconfig.app.json의 설정이 자동으로 적용됨
   server: {
     host: "0.0.0.0", // Docker 컨테이너에서 접근 가능하도록
     port: 5173,

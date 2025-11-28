@@ -13,7 +13,7 @@ services:
     environment:
       POSTGRES_DB: ${DATABASE_NAME:-ai_pass}
       POSTGRES_USER: ${DATABASE_USER:-ai_pass}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-prod_password}  # 기본값: prod_password (프로덕션에서는 환경 변수로 설정 권장)
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-prod_password}
     ports:
       - '${FORWARD_POSTGRES_PORT:-5432}:5432'
     volumes:
@@ -42,11 +42,25 @@ services:
       timeout: 5s
       retries: 5
 
-  server:
+  # AI 모델 서버 (Python Flask)
+  model-server:
+    build:
+      context: ../AI-pass-model
+      dockerfile: Dockerfile
+    container_name: ai-pass-model-server
+    networks:
+      - ai-pass-prod
+    expose:
+      - "5001"
+    # 내부 네트워크 전용 (포트 노출 안 함)
+    restart: unless-stopped
+
+  # 백엔드 서버 (NestJS)
+  backend:
     build:
       context: .
       dockerfile: apps/server/Dockerfile
-    container_name: ai-pass-server
+    container_name: ai-pass-backend
     networks:
       - ai-pass-prod
     depends_on:
@@ -54,69 +68,70 @@ services:
         condition: service_healthy
       mongodb:
         condition: service_healthy
-    # 프로덕션 환경 변수 설정
-    # 주의: 개발 환경(npm run dev)에서는 이 파일을 사용하지 않음
-    # 개발 환경은 docker-compose.dev.yml 사용
-    # 
-    # 환경 변수 설정 방법:
-    # 1. 환경 변수 직접 주입 (권장, 보안상 안전)
-    #    export NODE_ENV=production
-    #    export DATABASE_PASSWORD=xxx && docker-compose up -d
-    # 
-    # 2. .env.production 파일 사용
-    #    - .env.production 파일 생성 (Git에 커밋하지 않음)
-    #    - 아래 env_file 주석 해제
-    # env_file:
-    #   - .env.production
+      model-server:
+        condition: service_started
     environment:
-      NODE_ENV: production  # 프로덕션 환경 명시
+      NODE_ENV: production
       # Docker 컨테이너 내부에서는 서비스 이름 사용
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_NAME: ${DATABASE_NAME:-ai_pass}
       DATABASE_USER: ${DATABASE_USER:-ai_pass}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}  # 필수: 환경 변수로 설정
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
       MONGO_HOST: mongodb
       MONGO_PORT: 27017
       MONGO_DATABASE: ${MONGO_DATABASE:-ai-pass}
-      # OAuth 설정 (필수)
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}  # 필수: 환경 변수로 설정
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}  # 필수: 환경 변수로 설정
-      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}  # 필수: 환경 변수로 설정
-      # 모델 서버 URL
-      MODEL_SERVER_URL: ${MODEL_SERVER_URL:-http://host.docker.internal:5001}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    ports:
-      - '${FORWARD_SERVER_PORT:-5002}:5002'
-    # 프로덕션 환경에서는 볼륨 마운트 제거 (빌드된 파일 사용)
-    # volumes:
-    #   - ./apps/server:/usr/src/app/apps/server
-    #   - /usr/src/app/apps/server/node_modules
-    # command는 Dockerfile의 CMD 사용
+      # OAuth 설정
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
+      # 모델 서버 URL (Docker 서비스 이름 사용)
+      MODEL_SERVER_URL: ${MODEL_SERVER_URL:-http://model-server:5001}
+      # 세션 설정
+      SESSION_SECRET: ${SESSION_SECRET}
+      SESSION_MAX_AGE: ${SESSION_MAX_AGE:-1800}
+      # 프론트엔드 URL
+      FRONTEND_URL: ${FRONTEND_URL}
+      # 서버 포트 (5002로 통일)
+      SERVER_PORT: 5002
+      # Admin 이메일
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+    expose:
+      - "5002"
+    # 내부 네트워크 전용 (포트 노출 안 함, Nginx가 프록시)
+    restart: unless-stopped
 
-  client:
+  # 프론트엔드 빌더 (React 빌드 전용)
+  frontend-builder:
     build:
       context: .
       dockerfile: apps/client/Dockerfile
-    container_name: ai-pass-client
+    container_name: ai-pass-frontend-builder
+    networks:
+      - ai-pass-prod
+    volumes:
+      - frontend_dist:/usr/share/nginx/html
+    # 빌드만 수행하고 종료 (Nginx가 볼륨을 사용)
+
+  # Nginx 리버스 프록시
+  nginx:
+    image: nginx:alpine
+    container_name: ai-pass-nginx
     networks:
       - ai-pass-prod
     depends_on:
-      - server
-    environment:
-      NODE_ENV: production  # 프로덕션 환경 명시
-      VITE_BASE_URL: ${VITE_BASE_URL:-http://localhost:5002}
+      - frontend-builder
+      - backend
     ports:
-      - '${FORWARD_CLIENT_PORT:-5173}:5173'
-    # 프로덕션 환경에서는 볼륨 마운트 제거 (빌드된 파일 사용)
-    # volumes:
-    #   - ./apps/client:/usr/src/app/apps/client
-    #   - /usr/src/app/apps/client/node_modules
-    #   - /usr/src/app/node_modules
-    # command는 Dockerfile의 CMD 사용 (이미 빌드됨)
-    stdin_open: true
-    tty: true
+      - '${FORWARD_HTTP_PORT:-80}:80'
+      - '${FORWARD_HTTPS_PORT:-443}:443'
+    volumes:
+      - frontend_dist:/usr/share/nginx/html:ro
+      - ./nginx/nginx-production.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    restart: unless-stopped
 
 networks:
   ai-pass-prod:
@@ -128,4 +143,5 @@ volumes:
     name: ai-pass-postgres-prod
   mongodb_data:
     name: ai-pass-mongodb-prod
-
+  frontend_dist:
+    name: ai-pass-frontend-dist

@@ -81,13 +81,33 @@ export class AuthService {
 
       // 기존 OAuth 계정이 있으면 기존 User 반환
       // 단, 이메일이 Admin 목록에 있고 현재 역할이 USER인 경우 ADMIN으로 업데이트
+      // profile_picture도 업데이트 (Google에서 최신 프로필 사진을 받아올 수 있음)
       if (existingOAuthAccount) {
         const user = existingOAuthAccount.user;
+        let needsUpdate = false;
+        
         // 이메일이 Admin 목록에 있고 현재 역할이 USER인 경우 ADMIN으로 업데이트
         if (this.isAdminEmail(user.email) && user.role !== UserRole.ADMIN) {
           user.role = UserRole.ADMIN;
+          needsUpdate = true;
+        }
+        
+        // profile_picture 업데이트 (Google에서 받은 최신 프로필 사진으로)
+        if (userInfo.profile_picture && userInfo.profile_picture !== user.profile_picture) {
+          user.profile_picture = userInfo.profile_picture;
+          needsUpdate = true;
+        }
+        
+        // username도 업데이트 (변경되었을 수 있음)
+        if (userInfo.username && userInfo.username !== user.username) {
+          user.username = userInfo.username;
+          needsUpdate = true;
+        }
+        
+        if (needsUpdate) {
           await manager.save(User, user);
         }
+        
         return user;
       }
 

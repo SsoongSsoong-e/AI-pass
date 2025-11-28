@@ -12,7 +12,6 @@ import ConfirmPage from "./pages/ConfirmPage";
 import theme from "./style/theme";
 import ResultPage from "./pages/ResultPage";
 import AlbumUploadPage from "./pages/AlbumUploadPage";
-import React from "react";
 
 const routes = [
   {
@@ -55,7 +54,7 @@ const routes = [
 
 const router = createBrowserRouter(routes, {
   future: {
-    v7_startTransition: true,
+    // v7_startTransition 제거 (React Router v6에서는 지원하지 않음)
     v7_relativeSplatPath: true,
     v7_fetcherPersist: true,
     v7_normalizeFormMethod: true,
