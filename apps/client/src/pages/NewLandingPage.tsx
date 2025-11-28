@@ -1,10 +1,10 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import landingImage from '../assets/landing.png';
-import React from 'react';
 
 // 환경변수 또는 설정에서 가져오기
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+// Docker 환경에서는 Nginx를 통해 /api로 접근
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 
 export default function NewLandingPage() {
   const navigate = useNavigate();
@@ -49,16 +49,13 @@ export default function NewLandingPage() {
         const userData = await response.json();
         console.log('📦 [랜딩페이지] 응답 데이터:', userData);
         
-        // 더미 사용자 체크
-        const isDummyUser = userData.email === 'dev@example.com' && 
-                           userData.username === 'dev_user';
-        
-        if (isDummyUser) {
-          console.log('⚠️ [랜딩페이지] 더미 사용자 감지');
-          setIsLoggedIn(false);
-        } else {
+        // 사용자 데이터가 있으면 로그인 상태
+        if (userData) {
           console.log('✅ [랜딩페이지] 로그인된 사용자');
           setIsLoggedIn(true);
+        } else {
+          console.log('❌ [랜딩페이지] 로그인 안됨');
+          setIsLoggedIn(false);
         }
       } else {
         console.log('❌ [랜딩페이지] 로그인 안됨');
@@ -75,6 +72,7 @@ export default function NewLandingPage() {
 
   const handleGoogleLogin = () => {
     // 백엔드 Google OAuth 엔드포인트로 리다이렉트
+    // Docker 환경에서는 Nginx를 통해 /api로 접근
     window.location.href = `${API_BASE_URL}/auth/google`;
   };
 

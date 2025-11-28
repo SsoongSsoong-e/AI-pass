@@ -12,7 +12,6 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PassportPhotosModule } from './passport-photos/passport-photos.module';
 import { S3Module } from './s3/s3.module';
-import { resolveEnvPaths } from './config/env.helpers';
 import appConfig from './config/env.config';
 import { validateEnvVariables } from './config/env.schema';
 
@@ -20,7 +19,7 @@ import { validateEnvVariables } from './config/env.schema';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: resolveEnvPaths(process.cwd()),
+      envFilePath: ['.env'],
       load: [appConfig],
     }),
     TypeOrmModule.forRootAsync({
@@ -86,13 +85,13 @@ export class AppModule implements OnModuleInit {
       if (isProduction) {
         console.error('   프로덕션 환경:');
         console.error('   1. 환경 변수를 직접 설정하거나');
-        console.error('   2. .env.production 파일을 생성하여 설정');
+        console.error('   2. .env 파일을 생성하여 설정');
         console.error('   3. docker-compose.yml의 environment 섹션 확인');
       } else {
         console.error('   개발 환경:');
-        console.error('   1. 프로젝트 루트에 .env.local 파일 생성');
-        console.error('   2. cp .env.example .env.local 명령어로 복사');
-        console.error('   3. .env.local 파일에 필수 환경 변수 값 입력');
+        console.error('   1. 프로젝트 루트에 .env 파일 생성');
+        console.error('   2. cp .env.example .env 명령어로 복사');
+        console.error('   3. .env 파일에 필수 환경 변수 값 입력');
       }
       console.error('   4. 자세한 내용은 docs/ENV_VARIABLES.md 참고\n');
       

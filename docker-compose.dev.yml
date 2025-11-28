@@ -1,8 +1,5 @@
-version: '3.9'
-
-# 개발용 Docker Compose 설정
-# npm run dev 실행 시 자동으로 PostgreSQL과 MongoDB만 Docker 컨테이너로 실행
-# client와 server는 turbo dev로 로컬에서 실행됨
+# 개발용 Docker Compose 설정 (프로덕션과 동일한 구조)
+# 프로덕션과 동일한 서비스 구성이지만 개발 모드로 실행 (HTTPS + 자체 서명 인증서)
 
 services:
   postgres:
@@ -21,7 +18,6 @@ services:
       - postgres_data_dev:/var/lib/postgresql/data
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER:-ai_pass} -d ${DATABASE_NAME:-ai_pass}']
-      
       interval: 10s
       timeout: 5s
       retries: 5
@@ -44,9 +40,102 @@ services:
       timeout: 5s
       retries: 5
 
-  # 개발 환경에서는 client와 server를 로컬에서 실행
-  # turbo dev가 client와 server를 함께 실행함
-  # DB만 Docker 컨테이너로 실행하여 환경 일관성 유지
+  # AI 모델 서버 (Python Flask)
+  model-server:
+    build:
+      context: ../AI-pass-model
+      dockerfile: Dockerfile
+    container_name: ai-pass-model-server-dev
+    networks:
+      - ai-pass-dev
+    ports:
+      - '${FORWARD_MODEL_SERVER_PORT:-5001}:5001'
+    restart: unless-stopped
+
+  # 백엔드 서버 (NestJS) - 개발 모드
+  backend:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile.dev
+    container_name: ai-pass-backend-dev
+    networks:
+      - ai-pass-dev
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      model-server:
+        condition: service_started
+    environment:
+      NODE_ENV: development
+      # Docker 컨테이너 내부에서는 서비스 이름 사용
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME:-ai_pass}
+      DATABASE_USER: ${DATABASE_USER:-ai_pass}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-secret}
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DATABASE: ${MONGO_DATABASE:-ai-pass}
+      # OAuth 설정 (개발용) - .env 파일에서 읽어옴
+      # GOOGLE_CLIENT_ID와 GOOGLE_CLIENT_SECRET은 env_file에서 읽어옴
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-https://localhost:8443/api/auth/google/callback}
+      # 모델 서버 URL (Docker 서비스 이름 사용)
+      MODEL_SERVER_URL: http://model-server:5001
+      # 세션 설정
+      SESSION_SECRET: ${SESSION_SECRET:-dev-secret-key-change-in-production}
+      SESSION_MAX_AGE: ${SESSION_MAX_AGE:-1800}
+      # 프론트엔드 URL (nginx를 통한 HTTPS)
+      FRONTEND_URL: https://localhost:8443
+      # 서버 포트 (5002로 통일)
+      SERVER_PORT: 5002
+      # Admin 이메일
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+    expose:
+      - "5002"
+    volumes:
+      - ./apps/server/src:/usr/src/app/apps/server/src
+      - ./apps/server/tsconfig.json:/usr/src/app/apps/server/tsconfig.json
+      - ./apps/server/tsconfig.build.json:/usr/src/app/apps/server/tsconfig.build.json
+    restart: unless-stopped
+
+  # 프론트엔드 빌더 (React 빌드)
+  frontend-builder:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+      args:
+        # 프론트엔드 빌드 시점에 환경 변수 전달
+        # Docker 환경에서는 Nginx를 통해 /api로 접근
+        VITE_API_URL: /api
+        VITE_BASE_URL: /api
+    container_name: ai-pass-frontend-builder-dev
+    networks:
+      - ai-pass-dev
+    volumes:
+      - frontend_dist_dev:/usr/share/nginx/html
+    # 빌드만 수행하고 종료 (Nginx가 볼륨을 사용)
+
+  # Nginx 리버스 프록시 (HTTPS + 자체 서명 인증서)
+  nginx:
+    image: nginx:alpine
+    container_name: ai-pass-nginx-dev
+    networks:
+      - ai-pass-dev
+    depends_on:
+      - frontend-builder
+      - backend
+    ports:
+      - '${FORWARD_HTTP_PORT:-8080}:80'
+      - '${FORWARD_HTTPS_PORT:-8443}:443'
+    volumes:
+      - frontend_dist_dev:/usr/share/nginx/html:ro
+      - ./nginx/nginx-dev.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    restart: unless-stopped
 
 networks:
   ai-pass-dev:
@@ -58,4 +147,5 @@ volumes:
     name: ai-pass-postgres-dev
   mongodb_data_dev:
     name: ai-pass-mongodb-dev
-
+  frontend_dist_dev:
+    name: ai-pass-frontend-dist-dev

@@ -3,9 +3,8 @@ import { useContext, useState, useEffect } from "react";
 import axiosInstance from "../axios.config";
 import SidebarNavigation from '../components/SidebarNavigation';
 import { PhotoContext } from "../providers/RootProvider";
-import loadingImage from '../assets/loading.png';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 
 interface UserProfile {
   id: number;

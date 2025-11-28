@@ -8,7 +8,7 @@ import { Modal } from "@repo/ui/modal";
 import { PhotoContext } from "../providers/RootProvider";
 import SidebarNavigation from '../components/SidebarNavigation';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 
 interface UserProfile {
   id: number;
@@ -23,6 +23,7 @@ const WebcamPage = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const socketRef = useRef<any>(null);
+  const captureIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isValid, setIsValid] = useState<boolean>(false);
   const { verificationResult, setVerificationResult } = useContext(PhotoContext);
@@ -163,10 +164,38 @@ const WebcamPage = () => {
       setVerificationResult(null);
     }
 
-    socketRef.current = io(`${API_BASE_URL}/socket`);
+    // Socket.io 연결 설정
+    // NestJS Socket.io는 기본 경로 /socket.io/를 사용하고, 네임스페이스는 쿼리 파라미터로 전달됨
+    // Nginx가 /api/socket.io/를 백엔드로 프록시하므로, 클라이언트는 /api/socket.io/로 연결
+    // Socket.io 클라이언트에서 네임스페이스를 첫 번째 인자로, path를 옵션으로 지정
+    console.log('[WebcamPage] Initializing Socket.io connection...');
+    socketRef.current = io('/socket', {
+      transports: ['websocket', 'polling'],
+      path: '/api/socket.io/',
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      autoConnect: true,
+      // WebSocket 연결 시 자격 증명 포함
+      withCredentials: true,
+    });
+    
+    socketRef.current.on('connect', () => {
+      console.log('[WebcamPage] Socket connected:', socketRef.current?.id);
+    });
+    
+    socketRef.current.on('disconnect', () => {
+      console.log('[WebcamPage] Socket disconnected');
+    });
+    
+    socketRef.current.on('connect_error', (error: Error) => {
+      console.error('[WebcamPage] Socket connection error:', error);
+    });
+    
     socketRef.current.on(
       "stream",
       (data: { tempVerificationResult: number[] | null }) => {
+        console.log('[WebcamPage] Stream data received:', data);
         setVerificationResult(data.tempVerificationResult);
       }
     );
@@ -182,6 +211,7 @@ const WebcamPage = () => {
         });
 
         if (videoRef.current) {
+
           videoRef.current.srcObject = stream;
         }
       } catch (err) {
@@ -190,10 +220,13 @@ const WebcamPage = () => {
     };
     setupWebcam();
 
-    const captureInterval = setInterval(captureAndSendFrame, 500);
+    // 초기 전송 간격 설정 (일반 모드: 100ms)
+    captureIntervalRef.current = setInterval(captureAndSendFrame, 100);
 
     return () => {
-      clearInterval(captureInterval);
+      if (captureIntervalRef.current) {
+        clearInterval(captureIntervalRef.current);
+      }
 
       if (videoRef.current && videoRef.current.srcObject) {
         // @ts-ignore
@@ -211,6 +244,31 @@ const WebcamPage = () => {
       setIsValid(false);
     }
   }, [verificationResult]);
+
+  // isValid 상태에 따라 전송 간격 변경
+  useEffect(() => {
+    if (captureIntervalRef.current) {
+      clearInterval(captureIntervalRef.current);
+    }
+
+    if (isValid) {
+      // 카운트다운 모드: 정확히 1초 간격으로 포즈 검증하기 위해
+      // 서버 처리 시간(평균 230ms) + 네트워크 지연(50ms) = 280ms를 고려하여
+      // 클라이언트 전송 간격 = 1000ms - 280ms = 720ms
+      console.log('[WebcamPage] Switching to countdown mode: 720ms interval (to achieve 1s verification cycle)');
+      captureIntervalRef.current = setInterval(captureAndSendFrame, 720);
+    } else {
+      // 일반 모드: 100ms 간격으로 전송
+      console.log('[WebcamPage] Switching to normal mode: 100ms interval');
+      captureIntervalRef.current = setInterval(captureAndSendFrame, 100);
+    }
+
+    return () => {
+      if (captureIntervalRef.current) {
+        clearInterval(captureIntervalRef.current);
+      }
+    };
+  }, [isValid]);
 
   useEffect(() => {
     if (isValid) {
@@ -290,7 +348,7 @@ const WebcamPage = () => {
 
       {/* 로딩 표시 */}
       {isLoading && <div className="text-gray-600 mb-4">loading...</div>}
-      
+
       {/* 카운트다운 모달 */}
       <Modal visible={isValid}>
         <div className="text-center">

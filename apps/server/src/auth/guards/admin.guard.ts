@@ -13,10 +13,6 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
  * 사용법:
  * @UseGuards(AuthenticatedGuard, AdminGuard)
  * async someMethod() { ... }
- * 
- * AUTH_ENABLED 환경 변수:
- * - false: 인증 없이 모든 요청 통과 (개발 환경)
- * - true: 정상적인 Admin 역할 검증 수행
  */
 @Injectable()
 export class AdminGuard extends AuthenticatedGuard {
@@ -49,12 +45,6 @@ export class AdminGuard extends AuthenticatedGuard {
 
     if (!isAuthenticated) {
       return false;
-    }
-
-    // AUTH_ENABLED가 false면 Admin 검증도 통과 (개발 환경)
-    const authEnabled = this.configService.get<boolean>('app.AUTH_ENABLED', false);
-    if (!authEnabled) {
-      return true;
     }
 
     // Admin 역할 확인

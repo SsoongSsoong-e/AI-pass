@@ -1,9 +1,8 @@
-import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarNavigation from '../components/SidebarNavigation';
 
-const API_BASE_URL = 'http://localhost:5002';
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 
 interface UserProfile {
   id: number;

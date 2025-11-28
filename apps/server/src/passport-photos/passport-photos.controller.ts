@@ -32,15 +32,13 @@ const MAX_PHOTOS_PER_USER = 10;
  * Passport Photos 관련 API 엔드포인트
  * 
  * 인증 관련:
- * - @UseGuards(AuthenticatedGuard)가 적용되어 있지만,
- *   AUTH_ENABLED 환경 변수가 false면 인증 없이 접근 가능
- * - 개발 환경: AUTH_ENABLED=false로 설정하여 인증 없이 사용
- * - 프로덕션 환경: AUTH_ENABLED=true로 설정하여 인증 필요
+ * - @UseGuards(AuthenticatedGuard)가 적용되어 있어 인증이 필요합니다.
+ * - @Public() 데코레이터가 없는 모든 엔드포인트는 인증이 필요합니다.
  */
 @ApiTags('passport-photos')
-@ApiCookieAuth('connect.sid') // Swagger 문서용 (AUTH_ENABLED=false면 실제 인증은 필요 없음)
+@ApiCookieAuth('connect.sid') // Swagger 문서용
 @Controller('passport-photos')
-@UseGuards(AuthenticatedGuard) // AUTH_ENABLED 설정에 따라 동작
+@UseGuards(AuthenticatedGuard) // 인증 필요
 export class PassportPhotosController {
   constructor(
     private readonly passportPhotosService: PassportPhotosService,

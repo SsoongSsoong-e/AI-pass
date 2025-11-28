@@ -5,9 +5,8 @@ import guidePhoneImg from '../assets/guide-phone.png';
 import guideFaceImg from '../assets/guide-face.png';
 import guideReadyImg from '../assets/guide-ready.png';
 import guideSecondImg from '../assets/guide-second.png';
-import React from 'react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL || '/api';
 const MAX_PHOTOS_PER_USER = 10;
 
 interface UserProfile {

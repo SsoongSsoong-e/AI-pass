@@ -8,10 +8,14 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",  // "node" → "bundler"로 변경
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
+
+    /* Import 설정 */
+    "allowSyntheticDefaultImports": true,  // 추가
+    "esModuleInterop": true,  // 추가
 
     /* Linting */
     "strict": true,
