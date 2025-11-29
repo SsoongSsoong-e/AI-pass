@@ -175,6 +175,9 @@ AI-pass/
 
 ## 기술 스택
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/d9bd56f9-d2ee-4aaf-a6eb-4c19550c163f" />
+
+
 ### Backend
 - NestJS
 - TypeORM (PostgreSQL)
