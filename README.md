@@ -60,6 +60,7 @@ npm run dev:down
 - ✅ 환경 변수는 `.env.local` 사용
 - ✅ 개발 전용 볼륨 사용 (프로덕션과 분리)
 
+
 ---
 
 ## 프로덕션 배포
@@ -135,6 +136,14 @@ docker-compose up -d
 
 ---
 
+
+## API 명세 요약
+
+<img width="1442" height="1362" alt="image" src="https://github.com/user-attachments/assets/d0ef4933-de1b-487d-b3ae-ca88b311da10" />
+
+
+---
+
 ## 문서
 
 - [환경 변수, Docker, Auth 종합 보고서](./docs/COMPREHENSIVE_CONFIGURATION_REPORT.md) - 환경 변수, Docker, Auth 관련 전체 내용
@@ -196,6 +205,7 @@ AI-pass/
 - MongoDB
 
 ---
+
 
 ## 라이선스
 
