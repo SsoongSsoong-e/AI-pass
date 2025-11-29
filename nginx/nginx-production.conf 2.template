@@ -1,0 +1,101 @@
+# 프로덕션 HTTPS 배포용 Nginx 설정 템플릿
+# DOMAIN 환경 변수를 사용하여 자동 생성됨
+# 사용법: envsubst < nginx/nginx-production.conf.template > nginx/nginx-production.conf
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    # SSL 설정
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # HTTP to HTTPS 리다이렉트
+    server {
+        listen 80;
+        server_name ${DOMAIN} www.${DOMAIN};
+        
+        # Let's Encrypt 인증서 발급을 위한 경로
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+        }
+
+        # 모든 HTTP 요청을 HTTPS로 리다이렉트
+        location / {
+            return 301 https://$server_name$request_uri;
+        }
+    }
+
+    # HTTPS 서버
+    server {
+        listen 443 ssl http2;
+        server_name ${DOMAIN} www.${DOMAIN};
+
+        # SSL 인증서 경로
+        ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # React Router를 위한 SPA 라우팅
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # API 프록시 (백엔드)
+        location /api {
+            proxy_pass http://backend:5002;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+            
+            # 세션 쿠키 전송을 위한 설정
+            proxy_cookie_path / /;
+        }
+
+        # WebSocket 프록시 (Socket.io)
+        location /socket.io/ {
+            proxy_pass http://backend:5002;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            # WebSocket 타임아웃 설정
+            proxy_read_timeout 86400;
+            proxy_send_timeout 86400;
+        }
+
+        # 정적 파일 캐싱
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+
+        # 보안 헤더
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    }
+}
+
