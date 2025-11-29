@@ -48,7 +48,7 @@ cp .env.example .env.local
 # .env.local 편집 (DATABASE_HOST=localhost)
 
 # 2. 개발 환경 시작 (DB 컨테이너 자동 시작 + turbo dev)
-npm run dev
+npm run dev:full
 
 # 3. 개발 환경 종료 (DB 컨테이너만 종료)
 npm run dev:down
@@ -199,4 +199,4 @@ AI-pass/
 
 ## 라이선스
 
-Private
+Public
