@@ -1,0 +1,38 @@
+# syntax=docker/dockerfile:1
+# 개발용 Dockerfile - 프로덕션과 동일하지만 개발 모드로 실행
+
+FROM node:20-alpine AS base
+
+WORKDIR /usr/src/app
+
+# Alpine Linux에서 sharp 모듈을 위해 필요한 시스템 라이브러리 먼저 설치
+RUN apk add --no-cache \
+    vips-dev \
+    vips \
+    python3 \
+    make \
+    g++
+
+# Install dependencies for the workspace
+COPY package.json package-lock.json ./
+COPY apps/server/package.json apps/server/package.json
+COPY packages packages
+
+# 의존성 설치 (sharp가 시스템 라이브러리를 사용하여 빌드됨)
+RUN npm install --include=optional
+
+# Copy source code
+COPY apps/server apps/server
+
+# ARM64 Alpine Linux에서 sharp를 명시적으로 재설치
+RUN npm install --os=linux --libc=musl --cpu=arm64 sharp --force || \
+    npm rebuild sharp --build-from-source
+
+WORKDIR /usr/src/app/apps/server
+
+# 개발 모드로 실행 (watch 모드 지원)
+# SERVER_PORT 환경 변수로 포트 제어 (기본값 5002)
+EXPOSE 5002
+
+CMD ["npm", "run", "dev"]
+
