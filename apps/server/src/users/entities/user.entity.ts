@@ -15,13 +15,6 @@ User Entity
 사용자 기본 정보를 저장하는 테이블
 OAuth Login으로 생성되며, 다른 OAuth 제공자는 서로 다른 도메인을 사용하므로 이메일이 자동으로 구분됨
 
-설계 원칙:
-- 각 OAuth 제공자는 별도의 User로 취급 (완전 분리 방식)
-- 다른 OAuth 제공자는 서로 다른 도메인을 사용하므로 이메일이 자동으로 구분됨
-  (예: Google -> user@gmail.com, Kakao -> user@kakao.com)
-- 원본 이메일을 그대로 사용 (provider prefix 불필요)
-- OAuth 계정은 provider + provider_user_id 조합으로 식별
-- 현재 비즈니스 로직: OAuth 계정 하나당 항상 새로운 User 생성 (One-to-One 관계)
 */
 
 @Entity('users')
