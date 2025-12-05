@@ -81,20 +81,6 @@ export class AppModule implements OnModuleInit {
         console.error(`   - ${key}`);
       });
       
-      console.error('\n💡 해결 방법:');
-      if (isProduction) {
-        console.error('   프로덕션 환경:');
-        console.error('   1. 환경 변수를 직접 설정하거나');
-        console.error('   2. .env 파일을 생성하여 설정');
-        console.error('   3. docker-compose.yml의 environment 섹션 확인');
-      } else {
-        console.error('   개발 환경:');
-        console.error('   1. 프로젝트 루트에 .env 파일 생성');
-        console.error('   2. cp .env.example .env 명령어로 복사');
-        console.error('   3. .env 파일에 필수 환경 변수 값 입력');
-      }
-      console.error('   4. 자세한 내용은 docs/ENV_VARIABLES.md 참고\n');
-      
       // 프로덕션에서는 에러, 개발 환경에서는 경고
       if (isProduction) {
         throw new Error(`필수 환경 변수가 누락되었습니다: ${validation.missing.join(', ')}`);
